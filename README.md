@@ -12,29 +12,6 @@
 - 个人页概览：展示基础统计信息和功能入口。
 - 本地 mock 模式：默认不请求线上 AI 服务，便于本地预览和开发。
 
-## 页面结构
-
-```text
-pages/
-  index/      首页输入与场景选择
-  result/     分析结果展示
-  history/    历史记录列表、筛选、搜索
-  profile/    我的页面与统计信息
-utils/
-  analyze.js  情感分析逻辑、mock 数据、真实接口预留
-  storage.js  本地历史记录存储
-  system.js   状态栏与页面顶部适配
-assets/
-  icons/      页面图标资源
-```
-
-## 技术栈
-
-- 微信小程序原生框架
-- JavaScript
-- WXML / WXSS
-- 微信本地缓存 `wx.getStorageSync` / `wx.setStorageSync`
-
 ## 运行方式
 
 1. 打开微信开发者工具。
