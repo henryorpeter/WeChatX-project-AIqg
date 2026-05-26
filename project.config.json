@@ -1,0 +1,19 @@
+{
+  "appid": "touristappid",
+  "projectname": "AI-Emotion-Analyze",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "./",
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "urlCheck": true,
+    "coverView": true,
+    "lazyloadPlaceholderEnable": false,
+    "preloadBackgroundData": false,
+    "autoAudits": false,
+    "uglifyFileName": false
+  },
+  "condition": {}
+}

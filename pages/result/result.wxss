@@ -1,0 +1,265 @@
+.result-page {
+  padding-top: 26rpx;
+}
+
+.loading-state,
+.empty-state {
+  min-height: 520rpx;
+  padding: 54rpx 34rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.loading-ring {
+  width: 74rpx;
+  height: 74rpx;
+  border-radius: 50%;
+  border: 8rpx solid rgba(255, 121, 184, 0.16);
+  border-top-color: #ff79b8;
+  margin-bottom: 28rpx;
+  animation: rotate 0.9s linear infinite;
+}
+
+.loading-title,
+.empty-title {
+  color: #342837;
+  font-size: 32rpx;
+  font-weight: 800;
+  margin-bottom: 12rpx;
+}
+
+.empty-text {
+  color: #8d7a8b;
+  font-size: 26rpx;
+  line-height: 1.6;
+  margin-bottom: 34rpx;
+}
+
+.summary-card,
+.section-card {
+  padding: 30rpx;
+  margin-bottom: 24rpx;
+}
+
+.summary-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.result-kicker {
+  color: #a05ed9;
+  font-size: 24rpx;
+  font-weight: 800;
+  margin-bottom: 8rpx;
+}
+
+.summary-title {
+  color: #2c2230;
+  font-size: 42rpx;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.created-at {
+  flex-shrink: 0;
+  color: #a997a7;
+  font-size: 23rpx;
+  line-height: 1.5;
+  padding-top: 8rpx;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.emotion-pill,
+.risk-pill {
+  min-height: 62rpx;
+  padding: 14rpx 24rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.emotion-pill {
+  color: #b13e83;
+  background: #fff0f8;
+}
+
+.risk-pill {
+  color: #8a5a00;
+  background: #fff3d8;
+}
+
+.risk-low {
+  color: #24805a;
+  background: #eafaf3;
+}
+
+.risk-mid {
+  color: #9a6900;
+  background: #fff2d1;
+}
+
+.risk-high {
+  color: #b43f59;
+  background: #ffe9ef;
+}
+
+.input-preview {
+  margin-top: 26rpx;
+  padding: 22rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(180deg, #fff9fd 0%, #ffffff 100%);
+  border: 1rpx solid rgba(255, 121, 184, 0.14);
+}
+
+.preview-label {
+  color: #9f63b6;
+  font-size: 23rpx;
+  font-weight: 800;
+  margin-bottom: 10rpx;
+}
+
+.preview-text {
+  color: #655563;
+  font-size: 25rpx;
+  line-height: 1.62;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.body-text {
+  margin-top: 18rpx;
+  color: #665463;
+  font-size: 28rpx;
+  line-height: 1.72;
+}
+
+.reply-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+  margin-top: 20rpx;
+  padding: 24rpx 22rpx;
+  border-radius: 22rpx;
+  background: linear-gradient(135deg, #fff4fa 0%, #f8f2ff 100%);
+  border: 1rpx solid rgba(180, 111, 210, 0.14);
+}
+
+.reply-index {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ff79b8, #a978ff);
+}
+
+.reply-content {
+  flex: 1;
+  min-width: 0;
+  color: #40323f;
+  font-size: 27rpx;
+  line-height: 1.58;
+  padding-right: 8rpx;
+}
+
+.copy-btn {
+  flex-shrink: 0;
+  min-width: 88rpx;
+  height: 54rpx;
+  border-radius: 999rpx;
+  color: #a14ec4;
+  font-size: 24rpx;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.avoid-card {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.avoid-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+
+.avoid-dot {
+  width: 12rpx;
+  height: 12rpx;
+  margin-top: 15rpx;
+  border-radius: 50%;
+  background: #d86686;
+}
+
+.avoid-text {
+  flex: 1;
+  color: #8a5965;
+  font-size: 26rpx;
+  line-height: 1.58;
+}
+
+.error-banner {
+  margin: 4rpx 0 20rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 20rpx;
+  color: #a54861;
+  font-size: 25rpx;
+  line-height: 1.5;
+  background: #fff0f3;
+  border: 1rpx solid rgba(219, 94, 119, 0.16);
+}
+
+.action-row {
+  display: flex;
+  gap: 18rpx;
+  margin-top: 10rpx;
+}
+
+.action-btn {
+  flex: 1;
+}
+
+.reanalyze-btn {
+  margin-top: 20rpx;
+}
+
+.disclaimer {
+  margin-top: 26rpx;
+  color: #9a8798;
+  font-size: 23rpx;
+  line-height: 1.6;
+  text-align: center;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

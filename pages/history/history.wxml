@@ -1,0 +1,109 @@
+<view class="history-page" style="padding-top: {{pageTop}}px;">
+  <view class="history-hero">
+    <view class="history-top">
+      <view class="title-block">
+        <view class="title-line">
+          <text class="page-title">历史记录</text>
+          <image class="title-heart" src="/assets/icons/history_title_heart_decoration.png" mode="aspectFit"></image>
+        </view>
+        <view class="page-subtitle">回顾你的每一次分析，见证关系的成长</view>
+      </view>
+
+      <view class="actions-stack">
+        <view class="top-buttons">
+          <button class="round-button" bindtap="toggleSearch" aria-label="搜索历史">
+            <image class="top-icon search-icon" src="/assets/icons/history_search.png" mode="aspectFit"></image>
+          </button>
+          <button class="round-button" bindtap="clearAll" aria-label="清空全部历史">
+            <image class="top-icon trash-top-icon" src="/assets/icons/history_top_trash.png" mode="aspectFit"></image>
+          </button>
+        </view>
+        <button wx:if="{{hasHistory}}" class="clear-link" bindtap="clearAll">
+          <image class="clear-link-icon" src="/assets/icons/history_clear_all_trash.png" mode="aspectFit"></image>
+          <text>清空全部</text>
+        </button>
+      </view>
+    </view>
+
+    <view wx:if="{{showSearch}}" class="search-card">
+      <input class="search-input" value="{{searchKeyword}}" placeholder="搜索聊天内容或情绪类型" placeholder-class="search-placeholder" bindinput="onSearchInput" />
+    </view>
+
+    <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="filter-track">
+        <button
+          wx:for="{{filters}}"
+          wx:key="value"
+          class="filter-pill {{activeFilter === item.value ? 'filter-active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="changeFilter"
+        >{{item.label}}</button>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{!hasHistory}}" class="empty-card">
+    <image class="empty-icon" src="/assets/icons/history_review_star.png" mode="aspectFit"></image>
+    <view class="empty-title">还没有分析记录</view>
+    <view class="empty-text">从首页完成一次分析后，记录会自动保存在这里。</view>
+    <button class="empty-action" bindtap="goHome">去分析</button>
+  </view>
+
+  <view wx:elif="{{displayHistory.length === 0}}" class="empty-card">
+    <image class="empty-icon" src="/assets/icons/history_review_star.png" mode="aspectFit"></image>
+    <view class="empty-title">没有匹配结果</view>
+    <view class="empty-text">换一个分类或搜索关键词试试。</view>
+  </view>
+
+  <view wx:else class="history-list">
+    <view wx:for="{{displayHistory}}" wx:key="id" class="history-card" data-id="{{item.id}}" bindtap="viewDetail">
+      <image class="mood-icon" src="{{item.icon}}" mode="aspectFit"></image>
+      <view class="record-main">
+        <view class="emotion-line {{item.emotionClass}}">
+          <view class="emotion-dot"></view>
+          <text>{{item.emotionType}}</text>
+        </view>
+        <view class="record-title">{{item.title}}</view>
+        <view class="record-preview">{{item.preview}}</view>
+        <view class="time-row">
+          <image class="clock-icon" src="/assets/icons/history_clock.png" mode="aspectFit"></image>
+          <text>{{item.createdAt}}</text>
+        </view>
+      </view>
+      <view class="record-side">
+        <view class="record-topline">
+          <view class="risk-pill {{item.riskClass}}">风险：{{item.riskLevel}}</view>
+          <image class="chevron-icon" src="/assets/icons/history_chevron_right.png" mode="aspectFit"></image>
+        </view>
+        <button class="delete-button" data-id="{{item.id}}" catchtap="deleteItem" aria-label="删除记录">
+          <image class="delete-icon" src="/assets/icons/history_clear_all_trash.png" mode="aspectFit"></image>
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <view class="review-banner" bindtap="goHome">
+    <image class="review-icon" src="/assets/icons/history_review_star.png" mode="aspectFit"></image>
+    <view class="review-copy">
+      <view class="review-title">回顾分析，更懂关系</view>
+      <view class="review-text">定期回顾记录，帮助你更好地理解关系变化</view>
+    </view>
+    <image class="review-arrow" src="/assets/icons/history_chevron_right.png" mode="aspectFit"></image>
+  </view>
+
+  <view class="bottom-spacer"></view>
+  <view class="custom-tabbar">
+    <button class="tab-item" bindtap="goHome">
+      <image class="tab-icon home-icon" src="/assets/icons/history_nav_home_inactive.png" mode="aspectFit"></image>
+      <text>首页</text>
+    </button>
+    <button class="tab-item tab-active" bindtap="goHistory">
+      <image class="tab-icon history-icon" src="/assets/icons/history_nav_history_active.png" mode="aspectFit"></image>
+      <text>历史记录</text>
+    </button>
+    <button class="tab-item" bindtap="goProfile">
+      <image class="tab-icon profile-icon" src="/assets/icons/history_nav_profile_inactive.png" mode="aspectFit"></image>
+      <text>我的</text>
+    </button>
+  </view>
+</view>

@@ -1,0 +1,100 @@
+<view class="profile-page" style="padding-top: {{pageTop}}px;">
+  <view class="profile-head">
+    <image class="avatar" src="/assets/icons/profile_avatar.png" mode="aspectFit"></image>
+    <view class="profile-info">
+      <view class="name-row">
+        <text class="nickname">情感探索者</text>
+        <image class="vip-badge" src="/assets/icons/profile_vip_badge.png" mode="aspectFit"></image>
+      </view>
+      <view class="slogan-row">
+        <text>用心理解，用爱回应</text>
+        <image class="profile-heart" src="/assets/icons/profile_heart.png" mode="aspectFit"></image>
+      </view>
+    </view>
+    <button class="edit-button" bindtap="editProfile">
+      <text>编辑资料</text>
+      <image class="edit-chevron" src="/assets/icons/profile_edit_chevron.png" mode="aspectFit"></image>
+    </button>
+  </view>
+
+  <view class="vip-banner">
+    <image class="banner-crown" src="/assets/icons/profile_banner_crown.png" mode="aspectFit"></image>
+    <view class="banner-copy">
+      <view class="banner-title">开通 VIP 会员</view>
+      <view class="banner-text">解锁无限分析、专属报告等特权</view>
+    </view>
+    <button class="banner-button" bindtap="openVip">
+      <text>立即开通</text>
+      <image class="banner-arrow" src="/assets/icons/profile_banner_arrow.png" mode="aspectFit"></image>
+    </button>
+  </view>
+
+  <view class="stats-card">
+    <view class="stat-item">
+      <image class="stat-icon chat-icon" src="/assets/icons/profile_stat_chat.png" mode="aspectFit"></image>
+      <view class="stat-value">{{analysisCount}}</view>
+      <view class="stat-label">分析总数</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <image class="stat-icon heart-icon" src="/assets/icons/profile_stat_heart.png" mode="aspectFit"></image>
+      <view class="stat-value">{{favoriteCount}}</view>
+      <view class="stat-label">收藏内容</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <image class="stat-icon star-icon" src="/assets/icons/profile_stat_star.png" mode="aspectFit"></image>
+      <view class="stat-value">{{adviceCount}}</view>
+      <view class="stat-label">专属建议</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <image class="stat-icon calendar-icon" src="/assets/icons/profile_stat_calendar.png" mode="aspectFit"></image>
+      <view class="stat-value">{{streakDays}}</view>
+      <view class="stat-label">连续使用天数</view>
+    </view>
+  </view>
+
+  <view class="vip-card">
+    <view class="vip-card-left">
+      <view class="vip-title-row">
+        <text class="vip-title">情感分析 VIP</text>
+        <image class="small-crown" src="/assets/icons/profile_vip_card_crown.png" mode="aspectFit"></image>
+      </view>
+      <view class="benefit-grid">
+        <view wx:for="{{benefits}}" wx:key="*this" class="benefit-item">
+          <image class="check-icon" src="/assets/icons/profile_check_circle.png" mode="aspectFit"></image>
+          <text>{{item}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="vip-card-art">
+      <image class="crystal-heart" src="/assets/icons/profile_vip_crystal_heart.png" mode="aspectFit"></image>
+      <button class="vip-action" bindtap="openVip">立即开通</button>
+    </view>
+  </view>
+
+  <view class="menu-card">
+    <view wx:for="{{menus}}" wx:key="title" class="menu-item" data-title="{{item.title}}" bindtap="openMenu">
+      <image class="menu-icon" src="{{item.icon}}" mode="aspectFit"></image>
+      <view class="menu-title">{{item.title}}</view>
+      <image class="menu-chevron" src="/assets/icons/profile_list_chevron.png" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <view class="bottom-spacer"></view>
+  <view class="custom-tabbar">
+    <button class="tab-item" bindtap="goHome">
+      <image class="tab-icon home-icon" src="/assets/icons/profile_nav_home_inactive.png" mode="aspectFit"></image>
+      <text>首页</text>
+    </button>
+    <button class="tab-item" bindtap="goHistory">
+      <image class="tab-icon history-icon" src="/assets/icons/profile_nav_history_inactive.png" mode="aspectFit"></image>
+      <text>历史记录</text>
+    </button>
+    <button class="tab-item tab-active" bindtap="goProfile">
+      <image class="tab-icon profile-icon" src="/assets/icons/profile_nav_profile_active.png" mode="aspectFit"></image>
+      <text>我的</text>
+    </button>
+  </view>
+</view>

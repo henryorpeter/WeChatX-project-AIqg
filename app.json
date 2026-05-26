@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/history/history",
+    "pages/profile/profile",
+    "pages/result/result"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff7fb",
+    "navigationBarTitleText": "AI 情感分析",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#fff7fb"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

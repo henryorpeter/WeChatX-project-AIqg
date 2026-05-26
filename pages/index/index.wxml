@@ -1,0 +1,92 @@
+<view class="home-page" style="padding-top: {{pageTop}}px;">
+  <view class="hero-area">
+    <view class="title-row">
+      <text class="title-gradient">AI</text>
+      <text class="title-main"> 情感分析</text>
+      <image class="title-heart" src="/assets/icons/home_title_heart_sparkle.png" mode="aspectFit"></image>
+    </view>
+    <view class="subtitle">读懂对方的心，给你更好的相处建议</view>
+    <view class="subtitle-underline"></view>
+  </view>
+
+  <view class="analysis-card">
+    <view class="card-head">
+      <view class="card-title">请输入聊天内容或描述你的情感困惑</view>
+      <button wx:if="{{inputText}}" class="clear-button" bindtap="clearInput" aria-label="清空输入内容">
+        <image class="clear-icon" src="/assets/icons/home_clear_trash.png" mode="aspectFit"></image>
+        <text>清空</text>
+      </button>
+    </view>
+
+    <view class="textarea-wrap">
+      <textarea
+        class="emotion-input"
+        placeholder="{{placeholderText}}"
+        placeholder-class="input-placeholder"
+        maxlength="{{maxLength}}"
+        value="{{inputText}}"
+        bindinput="onInput"
+      ></textarea>
+      <view class="count-text">{{inputCount}}/{{maxLength}}</view>
+    </view>
+
+    <button class="start-button" loading="{{loading}}" disabled="{{loading}}" bindtap="startAnalysis">
+      <image class="start-icon" src="/assets/icons/home_start_sparkle.png" mode="aspectFit"></image>
+      <text>{{loading ? '正在分析' : '开始分析'}}</text>
+    </button>
+
+    <view class="reference-note">
+      <image class="shield-mini" src="/assets/icons/home_disclaimer_shield.png" mode="aspectFit"></image>
+      <text>内容仅供参考，不构成任何心理咨询或情感决策建议</text>
+    </view>
+  </view>
+
+  <view wx:if="{{errorMessage}}" class="error-banner">{{errorMessage}}</view>
+
+  <view class="scene-head">
+    <view class="scene-title-row">
+      <image class="scene-title-icon" src="/assets/icons/home_section_heart.png" mode="aspectFit"></image>
+      <text>试试这些热门场景</text>
+    </view>
+    <button class="change-button" bindtap="changeScenes" aria-label="换一换热门场景">
+      <text>换一换</text>
+      <image class="change-icon" src="/assets/icons/home_refresh.png" mode="aspectFit"></image>
+    </button>
+  </view>
+
+  <view class="scene-grid">
+    <view wx:for="{{scenes}}" wx:key="title" class="scene-item" data-index="{{index}}" bindtap="useScene">
+      <view class="scene-left">
+        <image class="scene-icon" src="{{item.icon}}" mode="aspectFit"></image>
+        <view class="scene-name">{{item.title}}</view>
+      </view>
+      <image class="scene-arrow" src="/assets/icons/home_chevron_right_card.png" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <view class="privacy-card">
+    <image class="privacy-shield" src="/assets/icons/home_privacy_shield_heart.png" mode="aspectFit"></image>
+    <view class="privacy-copy">
+      <view class="privacy-title">保护隐私，安心分析</view>
+      <view class="privacy-text">你的内容仅本地保存，不会上传任何信息</view>
+    </view>
+    <image class="privacy-swoosh" src="/assets/icons/home_privacy_sparkles_swoosh.png" mode="aspectFit"></image>
+    <image class="privacy-arrow" src="/assets/icons/home_chevron_right_banner.png" mode="aspectFit"></image>
+  </view>
+
+  <view class="bottom-spacer"></view>
+  <view class="custom-tabbar">
+    <button class="tab-item tab-active" bindtap="goHome">
+      <image class="tab-icon" src="/assets/icons/home_nav_home.png" mode="aspectFit"></image>
+      <text>首页</text>
+    </button>
+    <button class="tab-item" bindtap="goToHistory">
+      <image class="tab-icon" src="/assets/icons/home_nav_history.png" mode="aspectFit"></image>
+      <text>历史记录</text>
+    </button>
+    <button class="tab-item" bindtap="goProfile">
+      <image class="tab-icon" src="/assets/icons/home_nav_profile.png" mode="aspectFit"></image>
+      <text>我的</text>
+    </button>
+  </view>
+</view>

@@ -1,0 +1,74 @@
+<view class="page-shell safe-area result-page">
+  <view wx:if="{{loading}}" class="loading-state soft-card">
+    <view class="loading-ring"></view>
+    <view class="loading-title">正在整理分析结果</view>
+    <view class="muted">请稍等片刻</view>
+  </view>
+
+  <view wx:elif="{{errorMessage}}" class="empty-state soft-card">
+    <view class="empty-title">结果不可用</view>
+    <view class="empty-text">{{errorMessage}}</view>
+    <button class="primary-button" bindtap="goHome">回到首页</button>
+  </view>
+
+  <view wx:else>
+    <view class="summary-card soft-card">
+      <view class="summary-head">
+        <view>
+          <view class="result-kicker">分析完成</view>
+          <view class="summary-title">关系状态速览</view>
+        </view>
+        <view class="created-at">{{result.createdAt}}</view>
+      </view>
+
+      <view class="tag-row">
+        <view class="emotion-pill">{{result.emotionType}}</view>
+        <view class="risk-pill {{riskClass}}">风险 {{result.riskLevel}}</view>
+      </view>
+
+      <view class="input-preview">
+        <view class="preview-label">你的输入</view>
+        <view class="preview-text">{{result.inputText}}</view>
+      </view>
+    </view>
+
+    <view class="section-card soft-card">
+      <view class="section-title">对方可能心理</view>
+      <view class="body-text">{{result.psychology}}</view>
+    </view>
+
+    <view class="section-card soft-card">
+      <view class="section-title">你当前的处境</view>
+      <view class="body-text">{{result.situationAnalysis}}</view>
+    </view>
+
+    <view class="section-card soft-card">
+      <view class="section-title">高情商回复建议</view>
+      <view wx:for="{{result.replySuggestions}}" wx:key="index" class="reply-card">
+        <view class="reply-index">{{index + 1}}</view>
+        <view class="reply-content">{{item}}</view>
+        <button class="copy-btn" data-text="{{item}}" bindtap="copy">复制</button>
+      </view>
+    </view>
+
+    <view class="section-card avoid-card soft-card">
+      <view class="section-title">不建议说的话</view>
+      <view wx:for="{{result.avoidSaying}}" wx:key="index" class="avoid-item">
+        <view class="avoid-dot"></view>
+        <view class="avoid-text">{{item}}</view>
+      </view>
+    </view>
+
+    <view wx:if="{{errorMessage}}" class="error-banner">{{errorMessage}}</view>
+
+    <view class="action-row">
+      <button class="ghost-button action-btn" bindtap="goHome">重新输入</button>
+      <button class="ghost-button action-btn" bindtap="goHistory">历史记录</button>
+    </view>
+    <button class="primary-button reanalyze-btn" loading="{{reAnalyzing}}" disabled="{{reAnalyzing}}" bindtap="reAnalyze">
+      {{reAnalyzing ? '重新分析中...' : '重新分析'}}
+    </button>
+
+    <view class="disclaimer">结果仅供参考，不构成心理咨询或情感决策建议。请尊重对方边界，避免操控、骚扰、欺骗和威胁式表达。</view>
+  </view>
+</view>

@@ -1,0 +1,381 @@
+.profile-page {
+  min-height: 100vh;
+  padding: 66rpx 34rpx 0;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 204, 221, 0.8), transparent 35%),
+    radial-gradient(circle at 96% 5%, rgba(211, 194, 255, 0.82), transparent 36%),
+    linear-gradient(180deg, #fff6fb 0%, #fffafe 48%, #ffffff 100%);
+  color: #141624;
+}
+
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.avatar {
+  width: 178rpx;
+  height: 178rpx;
+  flex-shrink: 0;
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.nickname {
+  color: #151827;
+  font-size: 36rpx;
+  line-height: 1.2;
+  font-weight: 900;
+}
+
+.vip-badge {
+  width: 122rpx;
+  height: 69rpx;
+}
+
+.slogan-row {
+  margin-top: 18rpx;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  color: #53546a;
+  font-size: 25rpx;
+  line-height: 1.35;
+}
+
+.profile-heart {
+  width: 46rpx;
+  height: 44rpx;
+}
+
+.edit-button {
+  min-width: 136rpx;
+  height: 62rpx;
+  padding: 0 20rpx 0 24rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14rpx;
+  color: #5d5684;
+  font-size: 25rpx;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 0 0 1rpx rgba(255, 255, 255, 0.8);
+}
+
+.edit-chevron {
+  width: 29rpx;
+  height: 38rpx;
+}
+
+.vip-banner {
+  margin-top: 32rpx;
+  min-height: 100rpx;
+  padding: 22rpx 28rpx;
+  border-radius: 22rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  background: linear-gradient(135deg, #2c263d 0%, #3d344d 52%, #272237 100%);
+  box-shadow: 0 18rpx 46rpx rgba(50, 42, 66, 0.22);
+}
+
+.banner-crown {
+  width: 126rpx;
+  height: 116rpx;
+  flex-shrink: 0;
+}
+
+.banner-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.banner-title {
+  color: #ffffff;
+  font-size: 31rpx;
+  font-weight: 900;
+  line-height: 1.32;
+}
+
+.banner-text {
+  margin-top: 8rpx;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 23rpx;
+  line-height: 1.4;
+}
+
+.banner-button {
+  min-width: 152rpx;
+  height: 64rpx;
+  padding: 0 20rpx 0 28rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14rpx;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 900;
+  background: linear-gradient(100deg, #f05a9d, #bd53ee);
+}
+
+.banner-arrow {
+  width: 28rpx;
+  height: 37rpx;
+}
+
+.stats-card {
+  min-height: 144rpx;
+  margin-top: 28rpx;
+  padding: 22rpx 22rpx;
+  border-radius: 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 16rpx 44rpx rgba(143, 82, 132, 0.09);
+}
+
+.stat-item {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon {
+  width: 62rpx;
+  height: 62rpx;
+  margin-bottom: 10rpx;
+}
+
+.calendar-icon {
+  width: 66rpx;
+  height: 66rpx;
+}
+
+.stat-value {
+  color: #151827;
+  font-size: 30rpx;
+  line-height: 1.12;
+  font-weight: 800;
+}
+
+.stat-label {
+  margin-top: 8rpx;
+  color: #666274;
+  font-size: 22rpx;
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 76rpx;
+  background: #ece8f0;
+}
+
+.vip-card {
+  margin-top: 28rpx;
+  min-height: 176rpx;
+  padding: 28rpx;
+  border-radius: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  gap: 20rpx;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 82% 22%, rgba(255, 168, 216, 0.3), transparent 28%),
+    linear-gradient(105deg, rgba(255, 247, 251, 0.96), rgba(255, 237, 247, 0.9));
+  border: 1rpx solid rgba(255, 154, 209, 0.32);
+  box-shadow: 0 16rpx 44rpx rgba(229, 111, 176, 0.1);
+}
+
+.vip-card-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.vip-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.vip-title {
+  color: #ff66a9;
+  font-size: 31rpx;
+  font-weight: 900;
+}
+
+.small-crown {
+  width: 54rpx;
+  height: 48rpx;
+}
+
+.benefit-grid {
+  margin-top: 18rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx 24rpx;
+}
+
+.benefit-item {
+  width: calc((100% - 24rpx) / 2);
+  min-height: 28rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  color: #5d566b;
+  font-size: 22rpx;
+  line-height: 1.35;
+}
+
+.check-icon {
+  width: 39rpx;
+  height: 40rpx;
+  flex-shrink: 0;
+}
+
+.vip-card-art {
+  width: 238rpx;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.crystal-heart {
+  width: 246rpx;
+  height: 190rpx;
+  margin-bottom: 8rpx;
+}
+
+.vip-action {
+  width: 154rpx;
+  height: 50rpx;
+  border-radius: 999rpx;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 900;
+  background: linear-gradient(100deg, #ef5aa4, #d352d7);
+}
+
+.menu-card {
+  margin-top: 28rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16rpx 44rpx rgba(143, 82, 132, 0.09);
+}
+
+.menu-item {
+  min-height: 86rpx;
+  padding: 18rpx 28rpx;
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  border-bottom: 1rpx solid rgba(224, 219, 230, 0.86);
+}
+
+.menu-item:last-child {
+  border-bottom: 0;
+}
+
+.menu-icon {
+  width: 58rpx;
+  height: 58rpx;
+  flex-shrink: 0;
+}
+
+.menu-title {
+  flex: 1;
+  min-width: 0;
+  color: #1f2030;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.menu-chevron {
+  width: 29rpx;
+  height: 38rpx;
+  flex-shrink: 0;
+}
+
+.edit-button:active,
+.banner-button:active,
+.vip-action:active,
+.menu-item:active,
+.tab-item:active {
+  opacity: 0.78;
+}
+
+.bottom-spacer {
+  height: calc(146rpx + env(safe-area-inset-bottom));
+}
+
+.custom-tabbar {
+  position: fixed;
+  left: 34rpx;
+  right: 34rpx;
+  bottom: calc(22rpx + env(safe-area-inset-bottom));
+  z-index: 20;
+  height: 104rpx;
+  padding: 8rpx 36rpx 8rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 -8rpx 38rpx rgba(151, 115, 151, 0.12);
+  backdrop-filter: blur(18rpx);
+}
+
+.tab-item {
+  min-width: 128rpx;
+  min-height: 88rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+  color: #8f8a9c;
+  font-size: 22rpx;
+  line-height: 1.2;
+}
+
+.tab-active {
+  color: #e947c9;
+}
+
+.tab-icon {
+  display: block;
+}
+
+.home-icon {
+  width: 57rpx;
+  height: 57rpx;
+}
+
+.history-icon {
+  width: 59rpx;
+  height: 58rpx;
+}
+
+.profile-icon {
+  width: 55rpx;
+  height: 58rpx;
+}
