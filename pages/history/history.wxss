@@ -159,8 +159,9 @@
 .filter-track {
   display: inline-flex;
   align-items: center;
-  gap: 4rpx;
-  min-width: calc(100vw - 64rpx);
+  gap: 2rpx;
+  width: max-content;
+  min-width: 0;
   padding: 4rpx;
   border-radius: 999rpx;
   background: rgba(255, 255, 255, 0.72);
@@ -169,9 +170,9 @@
 
 .filter-pill {
   width: auto;
-  min-width: 60rpx;
-  height: 48rpx;
-  padding: 0 14rpx;
+  min-width: 48rpx;
+  height: 44rpx;
+  padding: 0 10rpx;
   border-radius: 999rpx;
   color: #454456;
   font-size: 21rpx;
@@ -181,7 +182,7 @@
   justify-content: center;
   flex: 0 0 auto;
   white-space: nowrap;
-  line-height: 48rpx;
+  line-height: 44rpx;
 }
 
 .filter-active {
