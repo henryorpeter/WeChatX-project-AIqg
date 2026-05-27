@@ -102,7 +102,7 @@ Page({
     try {
       const accessState = await membership.getAccessStateAsync();
       if (!accessState.canAnalyze) {
-        this.showVipRequired();
+        this.showDailyLimitReached();
         return;
       }
     } catch (error) {
@@ -146,19 +146,46 @@ Page({
     }
   },
 
-  showVipRequired() {
+  showDailyLimitReached() {
     wx.showModal({
-      title: '免费次数已用完',
-      content: '你已完成 3 次免费分析，开通会员后可继续使用心依AI。',
-      confirmText: '去开通',
-      cancelText: '稍后',
+      title: '今日次数已用完',
+      content: '今日 2 次免费分析已用完，请明天再来继续使用心依AI。',
+      showCancel: false,
+      confirmText: '知道了',
       confirmColor: '#ef65b2',
-      success: (res) => {
-        if (res.confirm) {
-          wx.navigateTo({ url: '/pages/vip/vip?from=limit' });
-        }
+    });
+  },
+
+  unlockWithRewardedAd() {
+    if (!membership.REWARDED_AD_UNIT_ID) {
+      wx.showModal({
+        title: '广告位未配置',
+        content: '激励视频广告位开通后，填入广告位 ID 即可启用看广告解锁。',
+        showCancel: false,
+        confirmColor: '#ef65b2'
+      });
+      return;
+    }
+
+    if (!wx.createRewardedVideoAd) {
+      wx.showToast({ title: '当前微信版本暂不支持广告解锁', icon: 'none' });
+      return;
+    }
+
+    const rewardedAd = wx.createRewardedVideoAd({ adUnitId: membership.REWARDED_AD_UNIT_ID });
+    rewardedAd.onClose((res) => {
+      if (res && res.isEnded) {
+        membership.addAdUnlock();
+        wx.showToast({ title: '已解锁 1 次分析', icon: 'success' });
+      } else {
+        wx.showToast({ title: '看完广告后才能解锁', icon: 'none' });
       }
     });
+    rewardedAd.onError((error) => {
+      console.warn('激励视频广告加载失败', error);
+      wx.showToast({ title: '广告暂时不可用，请稍后再试', icon: 'none' });
+    });
+    rewardedAd.show().catch(() => rewardedAd.load().then(() => rewardedAd.show()));
   },
 
   goToHistory() {

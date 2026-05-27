@@ -27,6 +27,7 @@ Page({
       active: false,
       planName: ''
     },
+    showVipEntry: false,
     analysisCount: 0,
     adviceCount: 3,
     streakDays: 8,
@@ -101,6 +102,10 @@ Page({
     const key = e.currentTarget.dataset.key;
     if (!key) return;
     this.setData({ activePanel: key });
+  },
+
+  handleContact(e) {
+    console.log('客服会话入口', e.detail);
   },
 
   closePanel() {

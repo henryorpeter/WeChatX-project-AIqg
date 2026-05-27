@@ -3,7 +3,12 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const db = cloud.database();
-const FREE_ANALYSIS_LIMIT = 3;
+const FREE_ANALYSIS_LIMIT = 2;
+
+function getTodayKey() {
+  const chinaTime = Date.now() + 8 * 60 * 60 * 1000;
+  return new Date(chinaTime).toISOString().slice(0, 10);
+}
 
 async function getDoc(collection, id) {
   try {
@@ -35,13 +40,15 @@ exports.main = async () => {
   const { OPENID } = cloud.getWXContext();
   const membership = await getDoc('memberships', OPENID);
   const usage = await getDoc('analysis_usage', OPENID);
-  const usedCount = Number(usage && usage.usedCount || 0);
+  const todayKey = getTodayKey();
+  const usedCount = usage && usage.usageDate === todayKey ? Number(usage.usedCount || 0) : 0;
   const vip = formatVip(membership);
 
   return {
     success: true,
     data: {
       vip,
+      usageDate: todayKey,
       usedCount,
       freeLimit: FREE_ANALYSIS_LIMIT,
       remainingFreeCount: Math.max(FREE_ANALYSIS_LIMIT - usedCount, 0),

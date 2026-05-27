@@ -18,7 +18,7 @@
     </button>
   </view>
 
-  <view class="vip-banner {{vipStatus.active ? 'vip-banner-active' : ''}}">
+  <view wx:if="{{showVipEntry}}" class="vip-banner {{vipStatus.active ? 'vip-banner-active' : ''}}">
     <image class="banner-crown" src="/assets/icons/profile_banner_crown.png" mode="aspectFit"></image>
     <view class="banner-copy">
       <view class="banner-title">{{vipStatus.active ? '心依AI 会员中' : '开通 VIP 会员'}}</view>
@@ -54,7 +54,7 @@
     </view>
   </view>
 
-  <view wx:if="{{!vipStatus.active}}" class="vip-card">
+  <view wx:if="{{showVipEntry && !vipStatus.active}}" class="vip-card">
     <view class="vip-card-left">
       <view class="vip-title-row">
         <text class="vip-title">{{vipStatus.active ? vipStatus.planName : '情感分析 VIP'}}</text>
@@ -119,10 +119,10 @@
         <view class="sheet-title">联系我们</view>
         <view class="contact-card">
           <view>
-            <view class="contact-label">客服微信</view>
-            <view class="contact-value">{{contactInfo.wechat}}</view>
+            <view class="contact-label">微信客服</view>
+            <view class="contact-value">点击进入客服会话</view>
           </view>
-          <button class="ghost-action" hover-class="none" data-value="{{contactInfo.wechat}}" bindtap="copyContact">复制</button>
+          <button class="ghost-action" hover-class="none" open-type="contact" bindcontact="handleContact">联系</button>
         </view>
         <view class="contact-card">
           <view>

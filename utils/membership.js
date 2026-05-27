@@ -1,6 +1,8 @@
-const FREE_ANALYSIS_LIMIT = 3;
+const FREE_ANALYSIS_LIMIT = 2;
 const USAGE_KEY = 'xinyi_analysis_usage_count';
 const VIP_KEY = 'xinyi_vip_status';
+const AD_UNLOCK_KEY = 'xinyi_rewarded_ad_unlock_count';
+const REWARDED_AD_UNIT_ID = '';
 
 const PLANS = {
   monthly: {
@@ -55,6 +57,11 @@ function safeSet(key, value) {
   }
 }
 
+function getTodayKey() {
+  const chinaTime = Date.now() + 8 * 60 * 60 * 1000;
+  return new Date(chinaTime).toISOString().slice(0, 10);
+}
+
 function hasCloud() {
   return typeof wx !== 'undefined' && wx.cloud && typeof wx.cloud.callFunction === 'function';
 }
@@ -102,12 +109,16 @@ function normalizeAccessState(rawState = {}) {
   const vip = formatVipStatus(rawState.vip || rawState);
   const usedCount = Number(rawState.usedCount || 0);
   const freeLimit = Number(rawState.freeLimit || FREE_ANALYSIS_LIMIT);
+  const adUnlockCount = Number(rawState.adUnlockCount || getAdUnlockCount());
+  const usageDate = rawState.usageDate || getTodayKey();
   const remainingFreeCount = Math.max(freeLimit - usedCount, 0);
 
   return {
     vip,
+    usageDate,
     usedCount,
     freeLimit,
+    adUnlockCount,
     remainingFreeCount,
     canAnalyze: vip.active || remainingFreeCount > 0
   };
@@ -115,23 +126,55 @@ function normalizeAccessState(rawState = {}) {
 
 function cacheAccessState(state) {
   safeSet(VIP_KEY, state.vip);
-  safeSet(USAGE_KEY, state.usedCount);
+  safeSet(USAGE_KEY, {
+    date: state.usageDate || getTodayKey(),
+    usedCount: state.usedCount
+  });
 }
 
 function getUsageCount() {
-  const count = Number(safeGet(USAGE_KEY, 0));
+  const usage = safeGet(USAGE_KEY, null);
+  if (!usage || typeof usage !== 'object' || usage.date !== getTodayKey()) {
+    return 0;
+  }
+
+  const count = Number(usage.usedCount || 0);
   return Number.isFinite(count) && count > 0 ? count : 0;
+}
+
+function getAdUnlockCount() {
+  const count = Number(safeGet(AD_UNLOCK_KEY, 0));
+  return Number.isFinite(count) && count > 0 ? count : 0;
+}
+
+function setAdUnlockCount(count) {
+  safeSet(AD_UNLOCK_KEY, Math.max(Number(count) || 0, 0));
 }
 
 function getVipStatus() {
   return formatVipStatus(safeGet(VIP_KEY, null));
 }
 
+function addAdUnlock() {
+  setAdUnlockCount(getAdUnlockCount() + 1);
+  return getAccessState();
+}
+
+function consumeAdUnlock() {
+  const count = getAdUnlockCount();
+  if (count > 0) {
+    setAdUnlockCount(count - 1);
+  }
+  return getAccessState();
+}
+
 function getAccessState() {
   return normalizeAccessState({
     vip: getVipStatus(),
+    usageDate: getTodayKey(),
     usedCount: getUsageCount(),
-    freeLimit: FREE_ANALYSIS_LIMIT
+    freeLimit: FREE_ANALYSIS_LIMIT,
+    adUnlockCount: getAdUnlockCount()
   });
 }
 
@@ -150,7 +193,10 @@ async function recordAnalysis() {
   if (!hasCloud()) {
     const state = getAccessState();
     if (state.vip.active) return state;
-    safeSet(USAGE_KEY, state.usedCount + 1);
+    safeSet(USAGE_KEY, {
+      date: getTodayKey(),
+      usedCount: state.usedCount + 1
+    });
     return getAccessState();
   }
 
@@ -192,12 +238,16 @@ function activatePlan(planKey) {
 
 module.exports = {
   FREE_ANALYSIS_LIMIT,
+  REWARDED_AD_UNIT_ID,
   PLANS,
   getUsageCount,
+  getAdUnlockCount,
   getVipStatus,
   getAccessState,
   getAccessStateAsync,
   recordAnalysis,
+  addAdUnlock,
+  consumeAdUnlock,
   createPayOrder,
   refreshMembershipAfterPay,
   activatePlan
