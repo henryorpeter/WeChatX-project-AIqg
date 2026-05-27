@@ -8,7 +8,7 @@
   <view wx:elif="{{errorMessage}}" class="empty-state soft-card">
     <view class="empty-title">结果不可用</view>
     <view class="empty-text">{{errorMessage}}</view>
-    <button class="primary-button" bindtap="goHome">回到首页</button>
+    <button class="primary-button" hover-class="none" bindtap="goHome">回到首页</button>
   </view>
 
   <view wx:else>
@@ -47,7 +47,7 @@
       <view wx:for="{{result.replySuggestions}}" wx:key="index" class="reply-card">
         <view class="reply-index">{{index + 1}}</view>
         <view class="reply-content">{{item}}</view>
-        <button class="copy-btn" data-text="{{item}}" bindtap="copy">复制</button>
+        <button class="copy-btn" hover-class="none" data-text="{{item}}" bindtap="copy">复制</button>
       </view>
     </view>
 
@@ -62,10 +62,10 @@
     <view wx:if="{{errorMessage}}" class="error-banner">{{errorMessage}}</view>
 
     <view class="action-row">
-      <button class="ghost-button action-btn" bindtap="goHome">重新输入</button>
-      <button class="ghost-button action-btn" bindtap="goHistory">历史记录</button>
+      <button class="ghost-button action-btn" hover-class="none" bindtap="goHome">重新输入</button>
+      <button class="ghost-button action-btn" hover-class="none" bindtap="goHistory">历史记录</button>
     </view>
-    <button class="primary-button reanalyze-btn" loading="{{reAnalyzing}}" disabled="{{reAnalyzing}}" bindtap="reAnalyze">
+    <button class="primary-button reanalyze-btn" hover-class="none" loading="{{reAnalyzing}}" disabled="{{reAnalyzing}}" bindtap="reAnalyze">
       {{reAnalyzing ? '重新分析中...' : '重新分析'}}
     </button>
 

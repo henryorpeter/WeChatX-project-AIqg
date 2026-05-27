@@ -25,6 +25,8 @@ function normalizeRecord(item) {
   return {
     id: item.id || `${Date.now()}_${Math.random().toString(16).slice(2)}`,
     inputText: item.inputText || '',
+    scene: item.scene || '用户自由输入',
+    model: item.model || '',
     emotionType: item.emotionType || '不确定',
     riskLevel: item.riskLevel || '中',
     psychology: item.psychology || '',

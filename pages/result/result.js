@@ -1,5 +1,6 @@
 const { analyzeEmotion } = require('../../utils/analyze.js');
 const storage = require('../../utils/storage.js');
+const membership = require('../../utils/membership.js');
 
 function getRiskClass(riskLevel) {
   if (riskLevel === '低') return 'risk-low';
@@ -57,11 +58,28 @@ Page({
     const current = this.data.result;
     if (!current || !current.inputText || this.data.reAnalyzing) return;
 
+    try {
+      const accessState = await membership.getAccessStateAsync();
+      if (!accessState.canAnalyze) {
+        this.showVipRequired();
+        return;
+      }
+    } catch (error) {
+      wx.showModal({
+        title: '会员状态获取失败',
+        content: error.message || '请检查云开发配置后重试。',
+        showCancel: false,
+        confirmColor: '#ef65b2'
+      });
+      return;
+    }
+
     this.setData({ reAnalyzing: true, errorMessage: '' });
     wx.showLoading({ title: '重新分析中...' });
 
     try {
-      const nextResult = await analyzeEmotion(current.inputText);
+      const nextResult = await analyzeEmotion(current.inputText, { scene: current.scene });
+      await membership.recordAnalysis();
       const record = storage.saveHistory(nextResult);
       getApp().globalData.lastResult = record;
       this.setData({
@@ -71,12 +89,33 @@ Page({
       wx.showToast({ title: '已更新结果', icon: 'success' });
     } catch (error) {
       console.error('重新分析失败', error);
-      this.setData({ errorMessage: '重新分析失败，请稍后重试。' });
-      wx.showToast({ title: '分析失败', icon: 'none' });
+      const message = error && error.message ? error.message : '重新分析失败，请稍后重试。';
+      this.setData({ errorMessage: message });
+      wx.showModal({
+        title: '分析失败',
+        content: message,
+        showCancel: false,
+        confirmColor: '#ef65b2'
+      });
     } finally {
       wx.hideLoading();
       this.setData({ reAnalyzing: false });
     }
+  },
+
+  showVipRequired() {
+    wx.showModal({
+      title: '免费次数已用完',
+      content: '你已完成 3 次免费分析，开通会员后可继续使用心依AI。',
+      confirmText: '去开通',
+      cancelText: '稍后',
+      confirmColor: '#ef65b2',
+      success: (res) => {
+        if (res.confirm) {
+          wx.navigateTo({ url: '/pages/vip/vip?from=limit' });
+        }
+      }
+    });
   },
 
   goHome() {

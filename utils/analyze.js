@@ -1,9 +1,12 @@
 const API_CONFIG = {
-  useMock: true,
-  // 后续接入真实 AI API 时，请改为你自己的后端 HTTPS 地址。
-  // 小程序端只请求后端，API Key 必须保存在服务端或云函数环境变量中。
-  endpoint: ''
+  useMock: false,
+  baseUrl: 'https://api.deepseek.com',
+  apiKey: 'sk-a0d7e6efd7144f5e8b644c01678c8dc6',
+  defaultModel: 'deepseek-chat',
+  complexModel: 'deepseek-reasoner'
 };
+
+const DEFAULT_SCENE = '用户自由输入';
 
 const EMOTION_TYPES = ['积极', '消极', '暧昧', '冷淡', '矛盾', '不确定'];
 const RISK_LEVELS = ['低', '中', '高'];
@@ -21,11 +24,18 @@ const EXTREME_KEYWORDS = [
   '威胁'
 ];
 
-function buildAnalyzePrompt(inputText) {
+function buildAnalyzePrompt(inputText, scene) {
   return [
-    '你是一个温和、边界清晰的情感沟通分析助手。',
-    '请分析用户提供的聊天记录、情感困惑或关系描述。',
-    '安全要求：不提供操控、PUA、骚扰、欺骗、威胁或越界建议；遇到自伤或伤人风险时，优先建议用户联系现实中的可信任人员和当地紧急服务。',
+    '你是一个情感关系分析助手。',
+    '',
+    '要求：',
+    '1. 不要下绝对结论',
+    '2. 不要制造焦虑',
+    '3. 不鼓励操控、PUA、冷暴力',
+    '4. 给出理性判断和可执行建议',
+    '5. 输出 JSON',
+    '',
+    '安全要求：遇到自伤或伤人风险时，优先建议用户联系现实中的可信任人员和当地紧急服务。',
     '只输出 JSON，不要输出 Markdown，不要输出解释性前后缀。',
     'JSON 字段必须稳定，结构如下：',
     '{',
@@ -36,8 +46,40 @@ function buildAnalyzePrompt(inputText) {
     '  "replySuggestions": ["高情商回复 1", "高情商回复 2", "高情商回复 3"],',
     '  "avoidSaying": ["不建议说的话 1", "不建议说的话 2", "不建议说的话 3"]',
     '}',
-    `用户输入：${inputText}`
+    '',
+    `用户场景：${scene || DEFAULT_SCENE}`,
+    `用户描述：${inputText}`
   ].join('\n');
+}
+
+function chooseDeepSeekModel(inputText, scene) {
+  const text = String(inputText || '');
+  const normalizedScene = String(scene || '');
+  const complexKeywords = [
+    '前任',
+    '复合',
+    '分手',
+    '冷暴力',
+    '拉黑',
+    '出轨',
+    '暧昧',
+    '异地',
+    '三角关系',
+    '长期',
+    '反复',
+    '吵架',
+    '道歉',
+    '见家长',
+    '结婚',
+    '离婚'
+  ];
+
+  if (text.length >= 350) return API_CONFIG.complexModel;
+  if ((text.match(/[。！？!?；;]/g) || []).length >= 6) return API_CONFIG.complexModel;
+  if (complexKeywords.some((keyword) => text.indexOf(keyword) !== -1 || normalizedScene.indexOf(keyword) !== -1)) {
+    return API_CONFIG.complexModel;
+  }
+  return API_CONFIG.defaultModel;
 }
 
 function detectExtremeContent(text) {
@@ -45,7 +87,7 @@ function detectExtremeContent(text) {
   return EXTREME_KEYWORDS.some((keyword) => normalizedText.indexOf(keyword) !== -1);
 }
 
-function normalizeAiResult(rawResult, inputText) {
+function normalizeAiResult(rawResult, inputText, meta = {}) {
   const result = rawResult || {};
   const emotionType = EMOTION_TYPES.indexOf(result.emotionType) >= 0 ? result.emotionType : '不确定';
   const riskLevel = RISK_LEVELS.indexOf(result.riskLevel) >= 0 ? result.riskLevel : '中';
@@ -62,6 +104,8 @@ function normalizeAiResult(rawResult, inputText) {
 
   return {
     inputText,
+    scene: meta.scene || DEFAULT_SCENE,
+    model: meta.model || '',
     emotionType,
     riskLevel,
     psychology: result.psychology || '目前信息有限，建议先观察对方表达是否稳定、是否愿意回应具体问题。',
@@ -203,55 +247,148 @@ function getMockAvoidSaying(emotionType) {
   return ['你到底什么意思，别装了。', '你必须给我一个答案。', '我这样做都是为了测试你。'];
 }
 
-function requestRealAnalyze(inputText) {
+function parseJsonContent(content) {
+  const text = String(content || '').trim()
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/i, '')
+    .replace(/```$/i, '')
+    .trim();
+
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
+    if (start >= 0 && end > start) {
+      return JSON.parse(text.slice(start, end + 1));
+    }
+    throw error;
+  }
+}
+
+function buildDeepSeekPayload(inputText, scene, model) {
+  const payload = {
+    model,
+    messages: [
+      {
+        role: 'system',
+        content: '你是一个克制、温和、边界清晰的情感关系分析助手。必须输出 JSON。'
+      },
+      {
+        role: 'user',
+        content: buildAnalyzePrompt(inputText, scene)
+      }
+    ],
+    response_format: { type: 'json_object' },
+    max_tokens: 1800,
+    stream: false
+  };
+
+  if (model !== API_CONFIG.complexModel) {
+    payload.temperature = 0.6;
+  }
+
+  return payload;
+}
+
+function getDeepSeekErrorMessage(statusCode, data) {
+  const apiMessage = data && (data.error && data.error.message || data.message);
+
+  if (statusCode === 401) {
+    return 'DeepSeek API Key 无效或已过期，请检查密钥。';
+  }
+
+  if (statusCode === 402) {
+    return 'DeepSeek 账号余额不足或未开通额度，请充值后再分析。';
+  }
+
+  if (statusCode === 429) {
+    return 'DeepSeek 请求过于频繁，请稍后再试。';
+  }
+
+  return apiMessage || `DeepSeek 接口返回异常：${statusCode}`;
+}
+
+function getRequestFailMessage(error) {
+  const errMsg = error && error.errMsg ? error.errMsg : '';
+
+  if (errMsg.indexOf('url not in domain list') !== -1 || errMsg.indexOf('合法域名') !== -1) {
+    return '微信小程序还没有配置 DeepSeek 合法域名，请在小程序后台添加 https://api.deepseek.com。';
+  }
+
+  if (errMsg.indexOf('timeout') !== -1) {
+    return 'DeepSeek 请求超时，请检查网络后重试。';
+  }
+
+  return errMsg || 'DeepSeek 请求失败，请稍后重试。';
+}
+
+function requestRealAnalyze(inputText, options = {}) {
   return new Promise((resolve, reject) => {
-    if (!API_CONFIG.endpoint) {
-      reject(new Error('未配置后端 AI 分析接口'));
+    if (!API_CONFIG.baseUrl || !API_CONFIG.apiKey) {
+      reject(new Error('未配置 DeepSeek API 信息'));
       return;
     }
 
+    const scene = options.scene || DEFAULT_SCENE;
+    const model = chooseDeepSeekModel(inputText, scene);
+
     wx.request({
-      url: API_CONFIG.endpoint,
+      url: `${API_CONFIG.baseUrl}/chat/completions`,
       method: 'POST',
       header: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        Authorization: `Bearer ${API_CONFIG.apiKey}`
       },
-      data: {
-        inputText,
-        prompt: buildAnalyzePrompt(inputText)
-      },
+      data: buildDeepSeekPayload(inputText, scene, model),
       success: (res) => {
         if (res.statusCode < 200 || res.statusCode >= 300) {
-          reject(new Error(`AI 接口返回异常：${res.statusCode}`));
+          reject(new Error(getDeepSeekErrorMessage(res.statusCode, res.data)));
           return;
         }
-        resolve(normalizeAiResult(res.data, inputText));
+
+        try {
+          const content = res.data
+            && res.data.choices
+            && res.data.choices[0]
+            && res.data.choices[0].message
+            && res.data.choices[0].message.content;
+          const rawResult = parseJsonContent(content);
+          resolve(normalizeAiResult(rawResult, inputText, { scene, model }));
+        } catch (error) {
+          reject(new Error('DeepSeek 返回内容不是可解析的 JSON'));
+        }
       },
-      fail: reject
+      fail: (error) => reject(new Error(getRequestFailMessage(error)))
     });
   });
 }
 
-function analyzeEmotion(inputText) {
+function analyzeEmotion(inputText, options = {}) {
   const safeInput = String(inputText || '').trim();
   if (!safeInput) {
     return Promise.reject(new Error('请输入需要分析的内容'));
   }
 
   if (detectExtremeContent(safeInput)) {
-    return Promise.resolve(getExtremeSafetyResult(safeInput));
+    return Promise.resolve({
+      ...getExtremeSafetyResult(safeInput),
+      scene: options.scene || DEFAULT_SCENE,
+      model: 'local-safety'
+    });
   }
 
   if (API_CONFIG.useMock) {
     return mockAnalyzeEmotion(safeInput);
   }
 
-  return requestRealAnalyze(safeInput);
+  return requestRealAnalyze(safeInput, options);
 }
 
 module.exports = {
   API_CONFIG,
   buildAnalyzePrompt,
+  chooseDeepSeekModel,
   detectExtremeContent,
   mockAnalyzeEmotion,
   requestRealAnalyze,

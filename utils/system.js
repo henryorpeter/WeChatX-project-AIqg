@@ -2,7 +2,7 @@ function getWindowInfo() {
   if (wx.getWindowInfo) {
     return wx.getWindowInfo();
   }
-  return wx.getSystemInfoSync();
+  return {};
 }
 
 function getStatusLayout(extraTopPx) {

@@ -153,25 +153,26 @@
   position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 18rpx;
+  gap: 16rpx;
   margin-top: 20rpx;
-  padding: 24rpx 22rpx;
+  padding: 22rpx 150rpx 22rpx 20rpx;
   border-radius: 22rpx;
   background: linear-gradient(135deg, #fff4fa 0%, #f8f2ff 100%);
   border: 1rpx solid rgba(180, 111, 210, 0.14);
 }
 
 .reply-index {
-  width: 44rpx;
-  height: 44rpx;
+  width: 40rpx;
+  height: 40rpx;
   border-radius: 50%;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  font-size: 24rpx;
+  font-size: 22rpx;
   font-weight: 800;
+  line-height: 40rpx;
   background: linear-gradient(135deg, #ff79b8, #a978ff);
 }
 
@@ -179,19 +180,33 @@
   flex: 1;
   min-width: 0;
   color: #40323f;
-  font-size: 27rpx;
-  line-height: 1.58;
-  padding-right: 8rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  padding-top: 1rpx;
+  word-break: break-all;
 }
 
 .copy-btn {
-  flex-shrink: 0;
-  min-width: 88rpx;
-  height: 54rpx;
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  width: 104rpx;
+  min-width: 104rpx;
+  max-width: 104rpx;
+  height: 42rpx;
+  min-height: 42rpx;
+  max-height: 42rpx;
+  padding: 0;
+  margin: 0;
   border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #a14ec4;
-  font-size: 24rpx;
+  font-size: 22rpx;
   font-weight: 800;
+  line-height: 42rpx;
+  white-space: nowrap;
   background: rgba(255, 255, 255, 0.78);
 }
 

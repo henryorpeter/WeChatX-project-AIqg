@@ -1,5 +1,6 @@
 const { analyzeEmotion, detectExtremeContent } = require('../../utils/analyze.js');
 const storage = require('../../utils/storage.js');
+const membership = require('../../utils/membership.js');
 const { getStatusLayout } = require('../../utils/system.js');
 
 Page({
@@ -8,6 +9,7 @@ Page({
     inputText: '',
     inputCount: 0,
     maxLength: 1000,
+    currentScene: '用户自由输入',
     loading: false,
     errorMessage: '',
     placeholderText: '例如：\n\n他最近总是不回我消息，是不是不喜欢我了？\n我们经常吵架，他是不是对我没感情了？\n...',
@@ -54,6 +56,7 @@ Page({
     this.setData({
       inputText,
       inputCount: inputText.length,
+      currentScene: '用户自由输入',
       errorMessage: ''
     });
   },
@@ -66,6 +69,7 @@ Page({
     this.setData({
       inputText: scene.text,
       inputCount: scene.text.length,
+      currentScene: scene.title,
       errorMessage: ''
     });
   },
@@ -74,6 +78,7 @@ Page({
     this.setData({
       inputText: '',
       inputCount: 0,
+      currentScene: '用户自由输入',
       errorMessage: ''
     });
   },
@@ -94,6 +99,22 @@ Page({
 
     if (this.data.loading) return;
 
+    try {
+      const accessState = await membership.getAccessStateAsync();
+      if (!accessState.canAnalyze) {
+        this.showVipRequired();
+        return;
+      }
+    } catch (error) {
+      wx.showModal({
+        title: '会员状态获取失败',
+        content: error.message || '请检查云开发配置后重试。',
+        showCancel: false,
+        confirmColor: '#ef65b2'
+      });
+      return;
+    }
+
     if (detectExtremeContent(inputText)) {
       wx.showToast({ title: '将优先给出安全提醒', icon: 'none' });
     }
@@ -102,7 +123,8 @@ Page({
     wx.showLoading({ title: '分析中...' });
 
     try {
-      const result = await analyzeEmotion(inputText);
+      const result = await analyzeEmotion(inputText, { scene: this.data.currentScene });
+      await membership.recordAnalysis();
       const record = storage.saveHistory(result);
       getApp().globalData.lastResult = record;
       wx.navigateTo({
@@ -110,12 +132,33 @@ Page({
       });
     } catch (error) {
       console.error('分析失败', error);
-      this.setData({ errorMessage: '分析暂时失败，请稍后重试。若已接入真实接口，请检查后端域名与返回 JSON。' });
-      wx.showToast({ title: '分析失败', icon: 'none' });
+      const message = error && error.message ? error.message : '分析暂时失败，请稍后重试。';
+      this.setData({ errorMessage: message });
+      wx.showModal({
+        title: '分析失败',
+        content: message,
+        showCancel: false,
+        confirmColor: '#ef65b2'
+      });
     } finally {
       wx.hideLoading();
       this.setData({ loading: false });
     }
+  },
+
+  showVipRequired() {
+    wx.showModal({
+      title: '免费次数已用完',
+      content: '你已完成 3 次免费分析，开通会员后可继续使用心依AI。',
+      confirmText: '去开通',
+      cancelText: '稍后',
+      confirmColor: '#ef65b2',
+      success: (res) => {
+        if (res.confirm) {
+          wx.navigateTo({ url: '/pages/vip/vip?from=limit' });
+        }
+      }
+    });
   },
 
   goToHistory() {

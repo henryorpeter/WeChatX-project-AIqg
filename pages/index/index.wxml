@@ -1,8 +1,7 @@
 <view class="home-page" style="padding-top: {{pageTop}}px;">
   <view class="hero-area">
     <view class="title-row">
-      <text class="title-gradient">AI</text>
-      <text class="title-main"> 情感分析</text>
+      <text class="title-gradient">心依AI</text>
       <image class="title-heart" src="/assets/icons/home_title_heart_sparkle.png" mode="aspectFit"></image>
     </view>
     <view class="subtitle">读懂对方的心，给你更好的相处建议</view>
@@ -12,7 +11,7 @@
   <view class="analysis-card">
     <view class="card-head">
       <view class="card-title">请输入聊天内容或描述你的情感困惑</view>
-      <button wx:if="{{inputText}}" class="clear-button" bindtap="clearInput" aria-label="清空输入内容">
+      <button wx:if="{{inputText}}" class="clear-button" hover-class="none" bindtap="clearInput" aria-label="清空输入内容">
         <image class="clear-icon" src="/assets/icons/home_clear_trash.png" mode="aspectFit"></image>
         <text>清空</text>
       </button>
@@ -30,7 +29,7 @@
       <view class="count-text">{{inputCount}}/{{maxLength}}</view>
     </view>
 
-    <button class="start-button" loading="{{loading}}" disabled="{{loading}}" bindtap="startAnalysis">
+    <button class="start-button" hover-class="none" loading="{{loading}}" disabled="{{loading}}" bindtap="startAnalysis">
       <image class="start-icon" src="/assets/icons/home_start_sparkle.png" mode="aspectFit"></image>
       <text>{{loading ? '正在分析' : '开始分析'}}</text>
     </button>
@@ -48,7 +47,7 @@
       <image class="scene-title-icon" src="/assets/icons/home_section_heart.png" mode="aspectFit"></image>
       <text>试试这些热门场景</text>
     </view>
-    <button class="change-button" bindtap="changeScenes" aria-label="换一换热门场景">
+    <button class="change-button" hover-class="none" bindtap="changeScenes" aria-label="换一换热门场景">
       <text>换一换</text>
       <image class="change-icon" src="/assets/icons/home_refresh.png" mode="aspectFit"></image>
     </button>
@@ -76,15 +75,15 @@
 
   <view class="bottom-spacer"></view>
   <view class="custom-tabbar">
-    <button class="tab-item tab-active" bindtap="goHome">
+    <button class="tab-item tab-active" hover-class="none" bindtap="goHome">
       <image class="tab-icon" src="/assets/icons/home_nav_home.png" mode="aspectFit"></image>
       <text>首页</text>
     </button>
-    <button class="tab-item" bindtap="goToHistory">
+    <button class="tab-item" hover-class="none" bindtap="goToHistory">
       <image class="tab-icon" src="/assets/icons/home_nav_history.png" mode="aspectFit"></image>
       <text>历史记录</text>
     </button>
-    <button class="tab-item" bindtap="goProfile">
+    <button class="tab-item" hover-class="none" bindtap="goProfile">
       <image class="tab-icon" src="/assets/icons/home_nav_profile.png" mode="aspectFit"></image>
       <text>我的</text>
     </button>

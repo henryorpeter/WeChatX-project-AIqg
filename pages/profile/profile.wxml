@@ -1,32 +1,37 @@
 <view class="profile-page" style="padding-top: {{pageTop}}px;">
   <view class="profile-head">
-    <image class="avatar" src="/assets/icons/profile_avatar.png" mode="aspectFit"></image>
+    <image class="avatar" src="{{profile.avatarUrl}}" mode="aspectFit"></image>
     <view class="profile-info">
       <view class="name-row">
-        <text class="nickname">情感探索者</text>
+        <text class="nickname">{{profile.nickname}}</text>
+        <view wx:if="{{vipStatus.active}}" class="member-mark">VIP</view>
         <image class="vip-badge" src="/assets/icons/profile_vip_badge.png" mode="aspectFit"></image>
       </view>
       <view class="slogan-row">
-        <text>用心理解，用爱回应</text>
+        <text>{{profile.slogan}}</text>
         <image class="profile-heart" src="/assets/icons/profile_heart.png" mode="aspectFit"></image>
       </view>
     </view>
-    <button class="edit-button" bindtap="editProfile">
+    <button class="edit-button" hover-class="none" bindtap="editProfile">
       <text>编辑资料</text>
       <image class="edit-chevron" src="/assets/icons/profile_edit_chevron.png" mode="aspectFit"></image>
     </button>
   </view>
 
-  <view class="vip-banner">
+  <view class="vip-banner {{vipStatus.active ? 'vip-banner-active' : ''}}">
     <image class="banner-crown" src="/assets/icons/profile_banner_crown.png" mode="aspectFit"></image>
     <view class="banner-copy">
-      <view class="banner-title">开通 VIP 会员</view>
-      <view class="banner-text">解锁无限分析、专属报告等特权</view>
+      <view class="banner-title">{{vipStatus.active ? '心依AI 会员中' : '开通 VIP 会员'}}</view>
+      <view class="banner-text">{{vipStatus.active ? vipStatus.planName + '权益已生效，可无限分析' : '解锁无限分析、专属报告等特权'}}</view>
     </view>
-    <button class="banner-button" bindtap="openVip">
+    <button wx:if="{{!vipStatus.active}}" class="banner-button" hover-class="none" bindtap="openVip">
       <text>立即开通</text>
       <image class="banner-arrow" src="/assets/icons/profile_banner_arrow.png" mode="aspectFit"></image>
     </button>
+    <view wx:else class="expire-info">
+      <view wx:if="{{vipStatus.planKey !== 'lifetime'}}" class="expire-label">会员到期时间</view>
+      <view class="expire-date {{vipStatus.planKey === 'lifetime' ? 'expire-date-lifetime' : ''}}">{{vipStatus.expireText}}</view>
+    </view>
   </view>
 
   <view class="stats-card">
@@ -34,12 +39,6 @@
       <image class="stat-icon chat-icon" src="/assets/icons/profile_stat_chat.png" mode="aspectFit"></image>
       <view class="stat-value">{{analysisCount}}</view>
       <view class="stat-label">分析总数</view>
-    </view>
-    <view class="stat-divider"></view>
-    <view class="stat-item">
-      <image class="stat-icon heart-icon" src="/assets/icons/profile_stat_heart.png" mode="aspectFit"></image>
-      <view class="stat-value">{{favoriteCount}}</view>
-      <view class="stat-label">收藏内容</view>
     </view>
     <view class="stat-divider"></view>
     <view class="stat-item">
@@ -55,10 +54,10 @@
     </view>
   </view>
 
-  <view class="vip-card">
+  <view wx:if="{{!vipStatus.active}}" class="vip-card">
     <view class="vip-card-left">
       <view class="vip-title-row">
-        <text class="vip-title">情感分析 VIP</text>
+        <text class="vip-title">{{vipStatus.active ? vipStatus.planName : '情感分析 VIP'}}</text>
         <image class="small-crown" src="/assets/icons/profile_vip_card_crown.png" mode="aspectFit"></image>
       </view>
       <view class="benefit-grid">
@@ -70,29 +69,132 @@
     </view>
     <view class="vip-card-art">
       <image class="crystal-heart" src="/assets/icons/profile_vip_crystal_heart.png" mode="aspectFit"></image>
-      <button class="vip-action" bindtap="openVip">立即开通</button>
+      <button class="vip-action {{vipStatus.active ? 'vip-action-active' : ''}}" hover-class="none" bindtap="openVip">{{vipStatus.active ? '会员中' : '立即开通'}}</button>
     </view>
   </view>
 
   <view class="menu-card">
-    <view wx:for="{{menus}}" wx:key="title" class="menu-item" data-title="{{item.title}}" bindtap="openMenu">
+    <view wx:for="{{menus}}" wx:key="key" class="menu-item" data-key="{{item.key}}" bindtap="openMenu">
       <image class="menu-icon" src="{{item.icon}}" mode="aspectFit"></image>
-      <view class="menu-title">{{item.title}}</view>
+      <view class="menu-copy">
+        <view class="menu-title">{{item.title}}</view>
+        <view class="menu-desc">{{item.desc}}</view>
+      </view>
       <image class="menu-chevron" src="/assets/icons/profile_list_chevron.png" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <view wx:if="{{activePanel}}" class="sheet-mask" bindtap="closePanel">
+    <view class="sheet" catchtap="stopPanelTap">
+      <view class="sheet-handle"></view>
+
+      <view wx:if="{{activePanel === 'profile'}}">
+        <view class="sheet-title">编辑资料</view>
+        <button class="avatar-picker" hover-class="none" open-type="chooseAvatar" bindchooseavatar="chooseAvatar">
+          <image class="avatar-preview" src="{{profileDraft.avatarUrl}}" mode="aspectFill"></image>
+          <text>更换头像</text>
+        </button>
+        <view class="field-group">
+          <view class="field-label">昵称</view>
+          <input class="field-input" value="{{profileDraft.nickname}}" maxlength="12" data-field="nickname" bindinput="updateProfileDraft" />
+        </view>
+        <view class="field-group">
+          <view class="field-label">签名</view>
+          <input class="field-input" value="{{profileDraft.slogan}}" maxlength="24" data-field="slogan" bindinput="updateProfileDraft" />
+        </view>
+        <button class="primary-action" hover-class="none" bindtap="saveProfile">保存资料</button>
+      </view>
+
+      <view wx:elif="{{activePanel === 'feedback'}}">
+        <view class="sheet-title">问题反馈</view>
+        <view class="type-row">
+          <view wx:for="{{feedbackTypes}}" wx:key="*this" class="type-chip {{feedbackDraft.type === item ? 'type-chip-active' : ''}}" data-type="{{item}}" bindtap="selectFeedbackType">{{item}}</view>
+        </view>
+        <textarea class="feedback-textarea" value="{{feedbackDraft.content}}" maxlength="300" placeholder="遇到的问题、希望优化的地方，都可以写在这里" data-field="content" bindinput="updateFeedbackDraft"></textarea>
+        <input class="field-input contact-input" value="{{feedbackDraft.contact}}" placeholder="联系方式（选填）" data-field="contact" bindinput="updateFeedbackDraft" />
+        <button class="primary-action" hover-class="none" bindtap="submitFeedback">提交反馈</button>
+      </view>
+
+      <view wx:elif="{{activePanel === 'contact'}}">
+        <view class="sheet-title">联系我们</view>
+        <view class="contact-card">
+          <view>
+            <view class="contact-label">客服微信</view>
+            <view class="contact-value">{{contactInfo.wechat}}</view>
+          </view>
+          <button class="ghost-action" hover-class="none" data-value="{{contactInfo.wechat}}" bindtap="copyContact">复制</button>
+        </view>
+        <view class="contact-card">
+          <view>
+            <view class="contact-label">邮箱</view>
+            <view class="contact-value">{{contactInfo.email}}</view>
+          </view>
+          <button class="ghost-action" hover-class="none" data-value="{{contactInfo.email}}" bindtap="copyContact">复制</button>
+        </view>
+      </view>
+
+      <view wx:elif="{{activePanel === 'privacy'}}">
+        <view class="sheet-title">隐私与安全</view>
+        <view class="switch-row">
+          <view>
+            <view class="switch-title">分析记录仅保存在本机</view>
+            <view class="switch-desc">历史内容不主动上传云端</view>
+          </view>
+          <switch checked="{{privacySettings.localHistory}}" color="#ef65b2" data-key="localHistory" bindchange="togglePrivacy" />
+        </view>
+        <view class="switch-row">
+          <view>
+            <view class="switch-title">匿名体验模式</view>
+            <view class="switch-desc">减少个人身份信息展示</view>
+          </view>
+          <switch checked="{{privacySettings.anonymousMode}}" color="#ef65b2" data-key="anonymousMode" bindchange="togglePrivacy" />
+        </view>
+        <view class="switch-row">
+          <view>
+            <view class="switch-title">服务通知</view>
+            <view class="switch-desc">接收分析完成与会员提醒</view>
+          </view>
+          <switch checked="{{privacySettings.serviceNotice}}" color="#ef65b2" data-key="serviceNotice" bindchange="togglePrivacy" />
+        </view>
+      </view>
+
+      <view wx:elif="{{activePanel === 'settings'}}">
+        <view class="sheet-title">设置</view>
+        <view class="setting-row" bindtap="clearHistory">
+          <view>
+            <view class="setting-title">清空历史记录</view>
+            <view class="setting-desc">删除本机保存的分析记录</view>
+          </view>
+          <text class="setting-link">清空</text>
+        </view>
+        <view class="setting-row" bindtap="resetProfile">
+          <view>
+            <view class="setting-title">重置个人资料</view>
+            <view class="setting-desc">恢复默认昵称、头像和签名</view>
+          </view>
+          <text class="setting-link">重置</text>
+        </view>
+        <view class="setting-row">
+          <view>
+            <view class="setting-title">当前版本</view>
+            <view class="setting-desc">心依AI 1.0.0</view>
+          </view>
+        </view>
+      </view>
     </view>
   </view>
 
   <view class="bottom-spacer"></view>
   <view class="custom-tabbar">
-    <button class="tab-item" bindtap="goHome">
+    <button class="tab-item" hover-class="none" bindtap="goHome">
       <image class="tab-icon home-icon" src="/assets/icons/profile_nav_home_inactive.png" mode="aspectFit"></image>
       <text>首页</text>
     </button>
-    <button class="tab-item" bindtap="goHistory">
+    <button class="tab-item" hover-class="none" bindtap="goHistory">
       <image class="tab-icon history-icon" src="/assets/icons/profile_nav_history_inactive.png" mode="aspectFit"></image>
       <text>历史记录</text>
     </button>
-    <button class="tab-item tab-active" bindtap="goProfile">
+    <button class="tab-item tab-active" hover-class="none" bindtap="goProfile">
       <image class="tab-icon profile-icon" src="/assets/icons/profile_nav_profile_active.png" mode="aspectFit"></image>
       <text>我的</text>
     </button>

@@ -3,15 +3,17 @@
     "pages/index/index",
     "pages/history/history",
     "pages/profile/profile",
-    "pages/result/result"
+    "pages/result/result",
+    "pages/vip/vip"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff7fb",
-    "navigationBarTitleText": "AI 情感分析",
+    "navigationBarTitleText": "心依AI",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#fff7fb"
   },
   "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
   "sitemapLocation": "sitemap.json"
 }
