@@ -48,6 +48,7 @@ function syncLoginInfo(loginInfo) {
   return wx.cloud.callFunction({
     name: 'saveLoginInfo',
     data: {
+      code: loginInfo.code || '',
       userInfo: loginInfo.userInfo || {},
       loginAt: loginInfo.loginAt || Date.now()
     }
@@ -64,21 +65,27 @@ function syncLoginInfo(loginInfo) {
   });
 }
 
-function getUserProfile() {
-  if (!wx.getUserProfile) {
-    return Promise.reject(new Error('当前微信版本不支持登录授权，请升级微信后重试。'));
-  }
-
-  return wx.getUserProfile({
-    desc: '用于登录后记录分析使用信息'
+function wxLogin() {
+  return new Promise((resolve, reject) => {
+    wx.login({
+      success: (res) => {
+        if (res && res.code) {
+          resolve(res.code);
+          return;
+        }
+        reject(new Error('微信登录未返回 code'));
+      },
+      fail: reject
+    });
   });
 }
 
 async function loginWithWeChat() {
-  const profileRes = await getUserProfile();
+  const code = await wxLogin();
   const loginAt = Date.now();
   const loginInfo = {
-    userInfo: profileRes.userInfo || {},
+    code,
+    userInfo: {},
     loginAt
   };
 
@@ -91,31 +98,15 @@ function requireLogin() {
     return Promise.resolve(existing);
   }
 
-  return new Promise((resolve, reject) => {
-    wx.showModal({
-      title: '需要微信登录',
-      content: '登录后才能使用情感分析，并用于记录你的使用次数。',
-      confirmText: '微信登录',
-      cancelText: '暂不使用',
-      confirmColor: '#ef65b2',
-      success: async (res) => {
-        if (!res.confirm) {
-          reject(new Error('用户取消登录'));
-          return;
-        }
-
-        try {
-          const loginInfo = await loginWithWeChat();
-          wx.showToast({ title: '登录成功', icon: 'success' });
-          resolve(loginInfo);
-        } catch (error) {
-          wx.showToast({ title: error.message || '登录失败', icon: 'none' });
-          reject(error);
-        }
-      },
-      fail: reject
+  return loginWithWeChat()
+    .then((loginInfo) => {
+      wx.showToast({ title: '登录成功', icon: 'success' });
+      return loginInfo;
+    })
+    .catch((error) => {
+      wx.showToast({ title: error.message || '登录失败', icon: 'none' });
+      throw error;
     });
-  });
 }
 
 module.exports = {

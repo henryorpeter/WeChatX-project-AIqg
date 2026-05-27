@@ -150,7 +150,8 @@ Page({
   getCurrentProfile() {
     const savedProfile = this.getSavedProfile();
     const loginInfo = auth.getLoginInfo();
-    return loginInfo && loginInfo.userInfo
+    const userInfo = loginInfo && loginInfo.userInfo;
+    return userInfo && (userInfo.avatarUrl || userInfo.nickName)
       ? this.mergeLoginProfile(savedProfile, loginInfo.userInfo)
       : savedProfile;
   },

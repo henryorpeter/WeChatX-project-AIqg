@@ -15,12 +15,14 @@ async function setDoc(collection, id, data) {
 exports.main = async (event = {}) => {
   const { OPENID, UNIONID } = cloud.getWXContext();
   const userInfo = event.userInfo || {};
+  const code = event.code || '';
   const now = Date.now();
   const loginAt = Number(event.loginAt || now);
 
   await setDoc('users', OPENID, {
     openid: OPENID,
     unionid: UNIONID || '',
+    lastLoginCode: code,
     userInfo: {
       nickName: userInfo.nickName || '',
       avatarUrl: userInfo.avatarUrl || '',
@@ -38,6 +40,7 @@ exports.main = async (event = {}) => {
     data: {
       openid: OPENID,
       unionid: UNIONID || '',
+      code,
       loginAt,
       createdAt: now
     }
