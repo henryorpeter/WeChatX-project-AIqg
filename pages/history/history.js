@@ -1,4 +1,5 @@
 const storage = require('../../utils/storage.js');
+const auth = require('../../utils/auth.js');
 const { getStatusLayout } = require('../../utils/system.js');
 
 const FILTERS = [
@@ -54,10 +55,22 @@ Page({
 
   onLoad() {
     this.setData(getStatusLayout(18));
+    this.ensureLoggedIn();
   },
 
   onShow() {
-    this.refreshHistory();
+    if (auth.isLoggedIn()) {
+      this.refreshHistory();
+    }
+  },
+
+  async ensureLoggedIn() {
+    try {
+      await auth.requireLogin();
+      this.refreshHistory();
+    } catch (error) {
+      wx.reLaunch({ url: '/pages/index/index' });
+    }
   },
 
   refreshHistory() {
@@ -174,6 +187,15 @@ Page({
   goHistory() {},
 
   goProfile() {
-    wx.reLaunch({ url: '/pages/profile/profile' });
+    this.goLoggedInPage('/pages/profile/profile');
+  },
+
+  async goLoggedInPage(url) {
+    try {
+      await auth.requireLogin();
+      wx.reLaunch({ url });
+    } catch (error) {
+      wx.showToast({ title: '登录后才能继续使用', icon: 'none' });
+    }
   }
 });

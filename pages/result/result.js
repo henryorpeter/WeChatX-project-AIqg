@@ -1,6 +1,7 @@
 const { analyzeEmotion } = require('../../utils/analyze.js');
 const storage = require('../../utils/storage.js');
 const membership = require('../../utils/membership.js');
+const auth = require('../../utils/auth.js');
 
 function getRiskClass(riskLevel) {
   if (riskLevel === '低') return 'risk-low';
@@ -57,6 +58,13 @@ Page({
   async reAnalyze() {
     const current = this.data.result;
     if (!current || !current.inputText || this.data.reAnalyzing) return;
+
+    try {
+      await auth.requireLogin();
+    } catch (error) {
+      this.setData({ errorMessage: '登录后才能重新分析。' });
+      return;
+    }
 
     try {
       const accessState = await membership.getAccessStateAsync();

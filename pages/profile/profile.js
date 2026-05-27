@@ -1,5 +1,6 @@
 const storage = require('../../utils/storage.js');
 const membership = require('../../utils/membership.js');
+const auth = require('../../utils/auth.js');
 const { getStatusLayout } = require('../../utils/system.js');
 
 const PROFILE_KEY = 'emotion_user_profile';
@@ -62,19 +63,33 @@ Page({
   onLoad() {
     this.setData({
       ...getStatusLayout(20),
-      profile: this.getSavedProfile(),
+      profile: this.getCurrentProfile(),
       privacySettings: this.getSavedPrivacy(),
       vipStatus: membership.getVipStatus()
     });
+    this.ensureLoggedIn();
   },
 
   onShow() {
     const historyCount = storage.getHistory().length;
     this.setData({
       analysisCount: historyCount,
+      profile: this.getCurrentProfile(),
       vipStatus: membership.getVipStatus()
     });
-    this.refreshVipStatus();
+    if (auth.isLoggedIn()) {
+      this.refreshVipStatus();
+    }
+  },
+
+  async ensureLoggedIn() {
+    try {
+      await auth.requireLogin();
+      this.setData({ profile: this.getCurrentProfile() });
+      this.refreshVipStatus();
+    } catch (error) {
+      wx.reLaunch({ url: '/pages/index/index' });
+    }
   },
 
   async refreshVipStatus() {
@@ -130,6 +145,22 @@ Page({
     } catch (error) {
       return DEFAULT_PRIVACY;
     }
+  },
+
+  getCurrentProfile() {
+    const savedProfile = this.getSavedProfile();
+    const loginInfo = auth.getLoginInfo();
+    return loginInfo && loginInfo.userInfo
+      ? this.mergeLoginProfile(savedProfile, loginInfo.userInfo)
+      : savedProfile;
+  },
+
+  mergeLoginProfile(profile, userInfo) {
+    return {
+      ...profile,
+      avatarUrl: userInfo.avatarUrl || profile.avatarUrl,
+      nickname: userInfo.nickName || profile.nickname
+    };
   },
 
   chooseAvatar(e) {
@@ -270,8 +301,17 @@ Page({
   },
 
   goHistory() {
-    wx.reLaunch({ url: '/pages/history/history' });
+    this.goLoggedInPage('/pages/history/history');
   },
 
-  goProfile() {}
+  goProfile() {},
+
+  async goLoggedInPage(url) {
+    try {
+      await auth.requireLogin();
+      wx.reLaunch({ url });
+    } catch (error) {
+      wx.showToast({ title: '登录后才能继续使用', icon: 'none' });
+    }
+  }
 });

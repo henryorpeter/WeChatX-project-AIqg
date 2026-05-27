@@ -1,6 +1,7 @@
 const { analyzeEmotion, detectExtremeContent } = require('../../utils/analyze.js');
 const storage = require('../../utils/storage.js');
 const membership = require('../../utils/membership.js');
+const auth = require('../../utils/auth.js');
 const { getStatusLayout } = require('../../utils/system.js');
 
 Page({
@@ -100,6 +101,13 @@ Page({
     if (this.data.loading) return;
 
     try {
+      await auth.requireLogin();
+    } catch (error) {
+      this.setData({ errorMessage: '登录后才能开始分析。' });
+      return;
+    }
+
+    try {
       const accessState = await membership.getAccessStateAsync();
       if (!accessState.canAnalyze) {
         this.showDailyLimitReached();
@@ -189,12 +197,21 @@ Page({
   },
 
   goToHistory() {
-    wx.reLaunch({ url: '/pages/history/history' });
+    this.goLoggedInPage('/pages/history/history');
   },
 
   goHome() {},
 
   goProfile() {
-    wx.reLaunch({ url: '/pages/profile/profile' });
+    this.goLoggedInPage('/pages/profile/profile');
+  },
+
+  async goLoggedInPage(url) {
+    try {
+      await auth.requireLogin();
+      wx.reLaunch({ url });
+    } catch (error) {
+      this.setData({ errorMessage: '登录后才能继续使用。' });
+    }
   }
 });

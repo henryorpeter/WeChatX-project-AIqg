@@ -7,6 +7,8 @@ const db = cloud.database();
 const COLLECTIONS = [
   'orders',
   'memberships',
+  'users',
+  'login_logs',
   'analysis_usage',
   'analysis_usage_logs'
 ];
