@@ -5,10 +5,11 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 
 const COLLECTIONS = [
-  'orders',
-  'memberships',
   'users',
   'login_logs',
+  'feedbacks',
+  'orders',
+  'memberships',
   'analysis_usage',
   'analysis_usage_logs'
 ];

@@ -4,44 +4,49 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const db = cloud.database();
 
-async function setDoc(collection, id, data) {
-  try {
-    await db.collection(collection).doc(id).set({ data });
-  } catch (error) {
-    await db.collection(collection).add({ data: { _id: id, ...data } });
-  }
+function cleanUserInfo(userInfo = {}) {
+  const nickname = String(userInfo.nickname || '').trim();
+
+  return {
+    avatarUrl: userInfo.avatarUrl || '/assets/icons/profile_avatar.png',
+    nickname: (nickname || '情感探索者').slice(0, 12),
+    slogan: String(userInfo.slogan || '用心理解，用爱回应').trim().slice(0, 24)
+  };
 }
 
 exports.main = async (event = {}) => {
-  const { OPENID, UNIONID } = cloud.getWXContext();
-  const userInfo = event.userInfo || {};
-  const code = event.code || '';
-  const now = Date.now();
-  const loginAt = Number(event.loginAt || now);
+  const wxContext = cloud.getWXContext();
+  const openid = wxContext.OPENID;
+  const unionid = wxContext.UNIONID || '';
+  const userInfo = cleanUserInfo(event.userInfo || {});
+  const now = new Date();
 
-  await setDoc('users', OPENID, {
-    openid: OPENID,
-    unionid: UNIONID || '',
-    lastLoginCode: code,
-    userInfo: {
-      nickName: userInfo.nickName || '',
-      avatarUrl: userInfo.avatarUrl || '',
-      gender: userInfo.gender || 0,
-      country: userInfo.country || '',
-      province: userInfo.province || '',
-      city: userInfo.city || '',
-      language: userInfo.language || ''
-    },
-    lastLoginAt: loginAt,
-    updatedAt: now
+  if (!openid) {
+    return {
+      success: false,
+      message: '未获取到 openid'
+    };
+  }
+
+  const userDoc = {
+    openid,
+    unionid,
+    userInfo,
+    loginType: event.loginType || 'wechat_quick',
+    updatedAt: now,
+    lastLoginAt: now
+  };
+
+  await db.collection('users').doc(openid).set({
+    data: userDoc
   });
 
   await db.collection('login_logs').add({
     data: {
-      openid: OPENID,
-      unionid: UNIONID || '',
-      code,
-      loginAt,
+      openid,
+      unionid,
+      loginType: userDoc.loginType,
+      loginAt: event.loginAt || now.toISOString(),
       createdAt: now
     }
   });
@@ -49,8 +54,9 @@ exports.main = async (event = {}) => {
   return {
     success: true,
     data: {
-      openid: OPENID,
-      unionid: UNIONID || ''
+      openid,
+      unionid,
+      userInfo
     }
   };
 };

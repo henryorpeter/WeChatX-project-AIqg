@@ -1,0 +1,56 @@
+<view class="doc-page">
+  <view class="doc-title">隐私政策</view>
+  <view class="doc-meta">更新日期：2026年5月28日</view>
+
+  <view class="doc-card">
+    <view class="doc-section">
+      <view class="section-title">1. 我们如何收集和使用信息</view>
+      <view class="section-text">为提供基础服务，我们会通过微信登录能力获取登录凭证，并在云端能力开启后用于生成和保存当前微信用户对应的 openid。openid 用于识别用户、记录使用次数、会员状态和必要的账号服务。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">2. 头像和昵称</view>
+      <view class="section-text">头像、昵称只会在你主动点击“更换头像”或填写昵称并保存后记录，用于在“我的”页面展示。你可以随时在“我的 - 编辑资料”中修改或重置。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">3. 情感分析内容</view>
+      <view class="section-text">你输入的聊天内容或情感描述会用于生成 AI 分析结果。当前服务会向 AI 分析接口发送必要文本以完成分析，不会将你的内容公开展示。请避免输入身份证号、银行卡号、详细住址等敏感个人信息。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">4. 手机号说明</view>
+      <view class="section-text">当前阶段不收集、不绑定手机号，也不调用微信手机号授权组件。如后续新增手机号相关能力，我们会在使用前另行取得你的授权。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">5. 存储与安全</view>
+      <view class="section-text">个人资料、历史记录和隐私设置会优先保存在本机缓存；如云端同步能力开启，必要账号数据会保存在微信云开发数据库。我们会采取合理措施保护数据安全，防止未经授权的访问、泄露、篡改或丢失。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">6. 信息共享</view>
+      <view class="section-text">除实现 AI 分析、云开发、支付、客服等必要服务，或法律法规、监管要求所需外，我们不会主动向无关第三方出售、出租或共享你的个人信息。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">7. 你的权利</view>
+      <view class="section-text">你可以在“我的”页面修改头像、昵称和签名，可以清空本机历史记录。如需查询、更正或删除云端账号数据，可通过“我的 - 联系我们”提交申请。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">8. 未成年人保护</view>
+      <view class="section-text">若你为未成年人，请在监护人同意和指导下使用本服务。我们不鼓励未成年人输入高度私密、敏感或可能造成现实风险的内容。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">9. 政策更新</view>
+      <view class="section-text">我们可能根据产品功能、法律法规或审核要求更新本政策。更新后会在本页面展示新的版本，继续使用即表示你已了解更新内容。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">10. 联系我们</view>
+      <view class="section-text">如你对隐私政策或个人信息处理有疑问，可在“我的 - 联系我们”中通过客服或邮箱与我们联系。</view>
+    </view>
+  </view>
+</view>

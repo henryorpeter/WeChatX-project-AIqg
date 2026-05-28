@@ -549,6 +549,10 @@
   background: linear-gradient(100deg, #ef65b2 0%, #c558ec 100%);
 }
 
+.primary-action[disabled] {
+  opacity: 0.68;
+}
+
 .type-row {
   margin-top: 24rpx;
   display: flex;
@@ -577,7 +581,6 @@
   box-shadow: inset 0 0 0 2rpx rgba(239, 101, 178, 0.42);
 }
 
-.contact-card,
 .switch-row,
 .setting-row {
   min-height: 104rpx;
@@ -592,7 +595,84 @@
   box-shadow: inset 0 0 0 1rpx rgba(236, 227, 238, 0.9);
 }
 
-.contact-card > view {
+.contact-hero {
+  position: relative;
+  min-height: 178rpx;
+  margin-top: 12rpx;
+  padding: 30rpx 30rpx;
+  border-radius: 28rpx;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(255, 255, 255, 0.48), transparent 28%),
+    linear-gradient(120deg, #231c35 0%, #58305c 52%, #ee6ca8 100%);
+  box-shadow: 0 20rpx 46rpx rgba(84, 45, 91, 0.18);
+}
+
+.contact-hero::after {
+  content: "";
+  position: absolute;
+  right: -26rpx;
+  bottom: -42rpx;
+  width: 176rpx;
+  height: 176rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.contact-badge {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  min-height: 40rpx;
+  padding: 0 18rpx;
+  border-radius: 999rpx;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 20rpx;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.contact-title {
+  position: relative;
+  z-index: 1;
+  margin-top: 18rpx;
+  color: #ffffff;
+  font-size: 40rpx;
+  line-height: 1.15;
+  font-weight: 900;
+}
+
+.contact-subtitle {
+  position: relative;
+  z-index: 1;
+  margin-top: 12rpx;
+  max-width: 520rpx;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 23rpx;
+  line-height: 1.5;
+}
+
+.contact-card {
+  min-height: 134rpx;
+  margin-top: 18rpx;
+  padding: 24rpx 24rpx 24rpx 28rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22rpx;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1rpx rgba(236, 227, 238, 0.96), 0 14rpx 34rpx rgba(151, 92, 138, 0.08);
+}
+
+.contact-card-featured {
+  background:
+    radial-gradient(circle at 90% 0%, rgba(255, 223, 239, 0.88), transparent 30%),
+    #ffffff;
+}
+
+.contact-copy {
   flex: 1;
   min-width: 0;
 }
@@ -621,20 +701,28 @@
   white-space: nowrap;
 }
 
+.contact-desc {
+  margin-top: 10rpx;
+  color: #a09aa9;
+  font-size: 21rpx;
+  line-height: 1.35;
+}
+
 .ghost-action {
-  width: 92rpx;
-  min-width: 92rpx;
-  height: 48rpx;
+  width: 138rpx;
+  min-width: 138rpx;
+  height: 66rpx;
   margin: 0 0 0 auto;
   border-radius: 999rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #e947a1;
-  font-size: 21rpx;
-  font-weight: 800;
-  line-height: 48rpx;
-  background: #fff0f8;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 900;
+  line-height: 66rpx;
+  background: linear-gradient(100deg, #ef65b2 0%, #c558ec 100%);
+  box-shadow: 0 12rpx 24rpx rgba(207, 85, 190, 0.18);
 }
 
 .setting-link {

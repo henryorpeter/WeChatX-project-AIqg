@@ -1,7 +1,7 @@
 const { analyzeEmotion, detectExtremeContent } = require('../../utils/analyze.js');
+const auth = require('../../utils/auth.js');
 const storage = require('../../utils/storage.js');
 const membership = require('../../utils/membership.js');
-const auth = require('../../utils/auth.js');
 const { getStatusLayout } = require('../../utils/system.js');
 
 Page({
@@ -13,12 +13,16 @@ Page({
     currentScene: '用户自由输入',
     loading: false,
     errorMessage: '',
+    showLoginPanel: false,
+    loginLoading: false,
+    pendingAction: '',
+    agreementChecked: false,
     placeholderText: '例如：\n\n他最近总是不回我消息，是不是不喜欢我了？\n我们经常吵架，他是不是对我没感情了？\n...',
     scenes: [
       {
         icon: '/assets/icons/home_scene_warm_chat.png',
         title: '暧昧对象忽冷忽热',
-        text: '我和一个暧昧对象聊了两个月，前几天还很热情，最近突然回复很慢，但偶尔又会主动找我。我该怎么回？'
+        text: '我和一个暧昧对象聊了两个月，前几天还很热情，最近突然回复很慢，但偶尔又会主动找我。我该怎么判断？'
       },
       {
         icon: '/assets/icons/home_scene_no_reply_chat.png',
@@ -100,13 +104,15 @@ Page({
 
     if (this.data.loading) return;
 
-    try {
-      await auth.requireLogin();
-    } catch (error) {
-      this.setData({ errorMessage: '登录后才能开始分析。' });
+    if (!auth.isLoggedIn()) {
+      this.openLoginPanel('analysis');
       return;
     }
 
+    await this.runAnalysis(inputText);
+  },
+
+  async runAnalysis(inputText) {
     try {
       const accessState = await membership.getAccessStateAsync();
       if (!accessState.canAnalyze) {
@@ -154,13 +160,81 @@ Page({
     }
   },
 
+  openLoginPanel(action = '') {
+    this.setData({
+      showLoginPanel: true,
+      pendingAction: action,
+      agreementChecked: false
+    });
+  },
+
+  closeLoginPanel() {
+    if (this.data.loginLoading) return;
+    this.setData({ showLoginPanel: false, pendingAction: '' });
+  },
+
+  stopLoginTap() {},
+
+  toggleAgreement() {
+    this.setData({ agreementChecked: !this.data.agreementChecked });
+  },
+
+  openAgreement(e) {
+    const type = e.currentTarget.dataset.type;
+    const url = type === 'privacy' ? '/pages/privacy/privacy' : '/pages/agreement/agreement';
+    wx.navigateTo({ url });
+  },
+
+  async confirmLogin() {
+    if (this.data.loginLoading) return;
+
+    if (!this.data.agreementChecked) {
+      wx.showToast({ title: '请先同意协议', icon: 'none' });
+      return;
+    }
+
+    this.setData({ loginLoading: true });
+
+    try {
+      await auth.loginOneTap();
+      wx.showToast({ title: '登录成功', icon: 'success' });
+      const action = this.data.pendingAction;
+      this.setData({
+        showLoginPanel: false,
+        pendingAction: '',
+        loginLoading: false
+      });
+      this.completeLoginAction(action);
+    } catch (error) {
+      console.error('login failed', error);
+      this.setData({ loginLoading: false });
+      wx.showToast({ title: error.message || '登录失败', icon: 'none' });
+    }
+  },
+
+  completeLoginAction(action) {
+    if (action === 'analysis') {
+      this.runAnalysis(this.data.inputText.trim());
+      return;
+    }
+
+    if (action === 'history') {
+      wx.reLaunch({ url: '/pages/history/history' });
+      return;
+    }
+
+    if (action === 'profile') {
+      wx.reLaunch({ url: '/pages/profile/profile' });
+    }
+  },
+
   showDailyLimitReached() {
     wx.showModal({
       title: '今日次数已用完',
       content: '今日 2 次免费分析已用完，请明天再来继续使用心依AI。',
       showCancel: false,
       confirmText: '知道了',
-      confirmColor: '#ef65b2',
+      confirmColor: '#ef65b2'
     });
   },
 
@@ -197,21 +271,20 @@ Page({
   },
 
   goToHistory() {
-    this.goLoggedInPage('/pages/history/history');
+    if (!auth.isLoggedIn()) {
+      this.openLoginPanel('history');
+      return;
+    }
+    wx.reLaunch({ url: '/pages/history/history' });
   },
 
   goHome() {},
 
   goProfile() {
-    this.goLoggedInPage('/pages/profile/profile');
-  },
-
-  async goLoggedInPage(url) {
-    try {
-      await auth.requireLogin();
-      wx.reLaunch({ url });
-    } catch (error) {
-      this.setData({ errorMessage: '登录后才能继续使用。' });
+    if (!auth.isLoggedIn()) {
+      this.openLoginPanel('profile');
+      return;
     }
+    wx.reLaunch({ url: '/pages/profile/profile' });
   }
 });

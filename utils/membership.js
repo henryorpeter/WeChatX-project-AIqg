@@ -135,6 +135,10 @@ function cacheAccessState(state) {
 function getUsageCount() {
   const usage = safeGet(USAGE_KEY, null);
   if (!usage || typeof usage !== 'object' || usage.date !== getTodayKey()) {
+    safeSet(USAGE_KEY, {
+      date: getTodayKey(),
+      usedCount: 0
+    });
     return 0;
   }
 
@@ -183,10 +187,15 @@ async function getAccessStateAsync() {
     return getAccessState();
   }
 
-  const result = await callCloud('getMembershipStatus');
-  const state = normalizeAccessState(result.data || result);
-  cacheAccessState(state);
-  return state;
+  try {
+    const result = await callCloud('getMembershipStatus');
+    const state = normalizeAccessState(result.data || result);
+    cacheAccessState(state);
+    return state;
+  } catch (error) {
+    console.warn('会员状态云函数失败，使用本地次数', error);
+    return getAccessState();
+  }
 }
 
 async function recordAnalysis() {
@@ -200,10 +209,21 @@ async function recordAnalysis() {
     return getAccessState();
   }
 
-  const result = await callCloud('recordAnalysisUsage');
-  const state = normalizeAccessState(result.data || result);
-  cacheAccessState(state);
-  return state;
+  try {
+    const result = await callCloud('recordAnalysisUsage');
+    const state = normalizeAccessState(result.data || result);
+    cacheAccessState(state);
+    return state;
+  } catch (error) {
+    console.warn('记录分析次数云函数失败，使用本地次数', error);
+    const state = getAccessState();
+    if (state.vip.active) return state;
+    safeSet(USAGE_KEY, {
+      date: getTodayKey(),
+      usedCount: state.usedCount + 1
+    });
+    return getAccessState();
+  }
 }
 
 async function createPayOrder(planKey) {

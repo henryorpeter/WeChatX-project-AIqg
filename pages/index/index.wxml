@@ -42,6 +42,34 @@
 
   <view wx:if="{{errorMessage}}" class="error-banner">{{errorMessage}}</view>
 
+  <view wx:if="{{showLoginPanel}}" class="login-mask" bindtap="closeLoginPanel">
+    <view class="login-sheet" catchtap="stopLoginTap">
+      <view class="login-handle"></view>
+      <view class="login-kicker">安全登录</view>
+      <view class="login-title">登录后继续使用心依AI</view>
+
+      <view class="quick-login-card">
+        <image class="quick-login-icon" src="/assets/icons/profile_avatar.png" mode="aspectFill"></image>
+        <view class="quick-login-copy">
+          <view class="quick-login-title">微信一键登录</view>
+        </view>
+      </view>
+
+      <view class="agreement-row" bindtap="toggleAgreement">
+        <view class="check-dot {{agreementChecked ? 'check-dot-active' : ''}}"></view>
+        <view class="agreement-text">
+          <text>我已阅读并同意</text>
+          <text class="agreement-link" data-type="agreement" catchtap="openAgreement">《用户协议》</text>
+          <text>和</text>
+          <text class="agreement-link" data-type="privacy" catchtap="openAgreement">《隐私政策》</text>
+        </view>
+      </view>
+
+      <button class="login-primary" hover-class="none" loading="{{loginLoading}}" disabled="{{loginLoading}}" bindtap="confirmLogin">一键登录</button>
+      <button class="login-cancel" hover-class="none" disabled="{{loginLoading}}" bindtap="closeLoginPanel">暂不登录</button>
+    </view>
+  </view>
+
   <view class="scene-head">
     <view class="scene-title-row">
       <image class="scene-title-icon" src="/assets/icons/home_section_heart.png" mode="aspectFit"></image>
@@ -67,7 +95,7 @@
     <image class="privacy-shield" src="/assets/icons/home_privacy_shield_heart.png" mode="aspectFit"></image>
     <view class="privacy-copy">
       <view class="privacy-title">保护隐私，安心分析</view>
-      <view class="privacy-text">你的内容仅本地保存，不会上传任何信息</view>
+      <view class="privacy-text">你的内容仅用于生成分析，不会公开展示</view>
     </view>
     <image class="privacy-swoosh" src="/assets/icons/home_privacy_sparkles_swoosh.png" mode="aspectFit"></image>
     <image class="privacy-arrow" src="/assets/icons/home_chevron_right_banner.png" mode="aspectFit"></image>

@@ -96,7 +96,7 @@
         </button>
         <view class="field-group">
           <view class="field-label">昵称</view>
-          <input class="field-input" value="{{profileDraft.nickname}}" maxlength="12" data-field="nickname" bindinput="updateProfileDraft" />
+          <input class="field-input" type="nickname" value="{{profileDraft.nickname}}" maxlength="12" placeholder="请输入微信昵称" data-field="nickname" bindinput="updateProfileDraft" />
         </view>
         <view class="field-group">
           <view class="field-label">签名</view>
@@ -112,22 +112,28 @@
         </view>
         <textarea class="feedback-textarea" value="{{feedbackDraft.content}}" maxlength="300" placeholder="遇到的问题、希望优化的地方，都可以写在这里" data-field="content" bindinput="updateFeedbackDraft"></textarea>
         <input class="field-input contact-input" value="{{feedbackDraft.contact}}" placeholder="联系方式（选填）" data-field="contact" bindinput="updateFeedbackDraft" />
-        <button class="primary-action" hover-class="none" bindtap="submitFeedback">提交反馈</button>
+        <button class="primary-action" hover-class="none" loading="{{feedbackSubmitting}}" disabled="{{feedbackSubmitting}}" bindtap="submitFeedback">提交反馈</button>
       </view>
 
       <view wx:elif="{{activePanel === 'contact'}}">
-        <view class="sheet-title">联系我们</view>
-        <view class="contact-card">
-          <view>
+        <view class="contact-hero">
+          <view class="contact-badge">心依AI 支持中心</view>
+          <view class="contact-title">联系我们</view>
+          <view class="contact-subtitle">有功能建议、合作咨询或使用问题，都可以通过下面方式找到我们。</view>
+        </view>
+        <view class="contact-card contact-card-featured">
+          <view class="contact-copy">
             <view class="contact-label">微信客服</view>
             <view class="contact-value">点击进入客服会话</view>
+            <view class="contact-desc">适合处理功能问题、使用咨询和紧急反馈</view>
           </view>
           <button class="ghost-action" hover-class="none" open-type="contact" bindcontact="handleContact">联系</button>
         </view>
         <view class="contact-card">
-          <view>
+          <view class="contact-copy">
             <view class="contact-label">邮箱</view>
             <view class="contact-value">{{contactInfo.email}}</view>
+            <view class="contact-desc">适合商务合作、长期建议和资料补充</view>
           </view>
           <button class="ghost-action" hover-class="none" data-value="{{contactInfo.email}}" bindtap="copyContact">复制</button>
         </view>
@@ -177,7 +183,7 @@
         <view class="setting-row">
           <view>
             <view class="setting-title">当前版本</view>
-            <view class="setting-desc">心依AI 1.0.0</view>
+            <view class="setting-desc">心依AI 1.0.1</view>
           </view>
         </view>
       </view>

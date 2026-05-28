@@ -1,7 +1,6 @@
 const { analyzeEmotion } = require('../../utils/analyze.js');
 const storage = require('../../utils/storage.js');
 const membership = require('../../utils/membership.js');
-const auth = require('../../utils/auth.js');
 
 function getRiskClass(riskLevel) {
   if (riskLevel === '低') return 'risk-low';
@@ -60,13 +59,6 @@ Page({
     if (!current || !current.inputText || this.data.reAnalyzing) return;
 
     try {
-      await auth.requireLogin();
-    } catch (error) {
-      this.setData({ errorMessage: '登录后才能重新分析。' });
-      return;
-    }
-
-    try {
       const accessState = await membership.getAccessStateAsync();
       if (!accessState.canAnalyze) {
         this.showDailyLimitReached();
@@ -117,7 +109,7 @@ Page({
       content: '今日 2 次免费分析已用完，请明天再来继续使用心依AI。',
       showCancel: false,
       confirmText: '知道了',
-      confirmColor: '#ef65b2',
+      confirmColor: '#ef65b2'
     });
   },
 

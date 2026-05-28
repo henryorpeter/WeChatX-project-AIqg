@@ -1,7 +1,8 @@
 App({
   globalData: {
     lastResult: null,
-    systemInfo: null
+    systemInfo: null,
+    enableCloudLoginSync: false
   },
 
   onLaunch() {

@@ -1,6 +1,6 @@
 const storage = require('../../utils/storage.js');
-const membership = require('../../utils/membership.js');
 const auth = require('../../utils/auth.js');
+const membership = require('../../utils/membership.js');
 const { getStatusLayout } = require('../../utils/system.js');
 
 const PROFILE_KEY = 'emotion_user_profile';
@@ -33,6 +33,7 @@ Page({
     adviceCount: 3,
     streakDays: 8,
     activePanel: '',
+    feedbackSubmitting: false,
     feedbackTypes: ['体验问题', '分析建议', '内容纠错'],
     feedbackDraft: {
       type: '体验问题',
@@ -45,7 +46,7 @@ Page({
     },
     privacySettings: DEFAULT_PRIVACY,
     benefits: [
-      '无限次情感分析',
+      '不限次情感分析',
       '情感问题优先解答',
       '专属深度分析报告',
       '分析记录云端同步',
@@ -63,33 +64,19 @@ Page({
   onLoad() {
     this.setData({
       ...getStatusLayout(20),
-      profile: this.getCurrentProfile(),
+      profile: this.getSavedProfile(),
       privacySettings: this.getSavedPrivacy(),
       vipStatus: membership.getVipStatus()
     });
-    this.ensureLoggedIn();
   },
 
   onShow() {
-    const historyCount = storage.getHistory().length;
     this.setData({
-      analysisCount: historyCount,
-      profile: this.getCurrentProfile(),
+      analysisCount: storage.getHistory().length,
+      profile: this.getSavedProfile(),
       vipStatus: membership.getVipStatus()
     });
-    if (auth.isLoggedIn()) {
-      this.refreshVipStatus();
-    }
-  },
-
-  async ensureLoggedIn() {
-    try {
-      await auth.requireLogin();
-      this.setData({ profile: this.getCurrentProfile() });
-      this.refreshVipStatus();
-    } catch (error) {
-      wx.reLaunch({ url: '/pages/index/index' });
-    }
+    this.refreshVipStatus();
   },
 
   async refreshVipStatus() {
@@ -97,7 +84,7 @@ Page({
       const state = await membership.getAccessStateAsync();
       this.setData({ vipStatus: state.vip });
     } catch (error) {
-      console.warn('会员状态同步失败', error);
+      console.warn('refresh vip failed', error);
     }
   },
 
@@ -120,7 +107,7 @@ Page({
   },
 
   handleContact(e) {
-    console.log('客服会话入口', e.detail);
+    console.log('contact event', e.detail);
   },
 
   closePanel() {
@@ -130,12 +117,7 @@ Page({
   stopPanelTap() {},
 
   getSavedProfile() {
-    try {
-      const profile = wx.getStorageSync(PROFILE_KEY);
-      return profile && typeof profile === 'object' ? { ...DEFAULT_PROFILE, ...profile } : DEFAULT_PROFILE;
-    } catch (error) {
-      return DEFAULT_PROFILE;
-    }
+    return { ...DEFAULT_PROFILE, ...auth.getProfile() };
   },
 
   getSavedPrivacy() {
@@ -145,23 +127,6 @@ Page({
     } catch (error) {
       return DEFAULT_PRIVACY;
     }
-  },
-
-  getCurrentProfile() {
-    const savedProfile = this.getSavedProfile();
-    const loginInfo = auth.getLoginInfo();
-    const userInfo = loginInfo && loginInfo.userInfo;
-    return userInfo && (userInfo.avatarUrl || userInfo.nickName)
-      ? this.mergeLoginProfile(savedProfile, loginInfo.userInfo)
-      : savedProfile;
-  },
-
-  mergeLoginProfile(profile, userInfo) {
-    return {
-      ...profile,
-      avatarUrl: userInfo.avatarUrl || profile.avatarUrl,
-      nickname: userInfo.nickName || profile.nickname
-    };
   },
 
   chooseAvatar(e) {
@@ -181,8 +146,9 @@ Page({
   },
 
   saveProfile() {
-    const nickname = this.data.profileDraft.nickname.trim();
-    const slogan = this.data.profileDraft.slogan.trim();
+    const draft = this.data.profileDraft || {};
+    const nickname = String(draft.nickname || '').trim();
+    const slogan = String(draft.slogan || '').trim();
 
     if (!nickname) {
       wx.showToast({ title: '请输入昵称', icon: 'none' });
@@ -190,12 +156,15 @@ Page({
     }
 
     const profile = {
-      avatarUrl: this.data.profileDraft.avatarUrl || DEFAULT_PROFILE.avatarUrl,
+      avatarUrl: draft.avatarUrl || DEFAULT_PROFILE.avatarUrl,
       nickname: nickname.slice(0, 12),
       slogan: (slogan || DEFAULT_PROFILE.slogan).slice(0, 24)
     };
 
-    wx.setStorageSync(PROFILE_KEY, profile);
+    auth.saveUserProfile({
+      ...auth.getProfile(),
+      ...profile
+    });
     this.setData({
       profile,
       activePanel: ''
@@ -218,7 +187,36 @@ Page({
     });
   },
 
-  submitFeedback() {
+  saveFeedbackLocal(feedback) {
+    const list = wx.getStorageSync(FEEDBACK_KEY) || [];
+    wx.setStorageSync(FEEDBACK_KEY, [feedback].concat(Array.isArray(list) ? list : []).slice(0, 20));
+  },
+
+  submitFeedbackToCloud(feedback) {
+    if (!wx.cloud || !wx.cloud.callFunction) {
+      return Promise.reject(new Error('云开发未初始化'));
+    }
+
+    return wx.cloud.callFunction({
+      name: 'submitFeedback',
+      data: {
+        type: feedback.type,
+        content: feedback.content,
+        contact: feedback.contact,
+        profile: this.data.profile
+      }
+    }).then((res) => {
+      const result = res && res.result;
+      if (!result || result.success === false) {
+        throw new Error(result && result.message || '反馈上传失败');
+      }
+      return result.data || {};
+    });
+  },
+
+  async submitFeedback() {
+    if (this.data.feedbackSubmitting) return;
+
     const content = this.data.feedbackDraft.content.trim();
     const contact = this.data.feedbackDraft.contact.trim();
 
@@ -234,17 +232,41 @@ Page({
       contact,
       createdAt: new Date().toISOString()
     };
-    const list = wx.getStorageSync(FEEDBACK_KEY) || [];
-    wx.setStorageSync(FEEDBACK_KEY, [feedback].concat(Array.isArray(list) ? list : []).slice(0, 20));
-    this.setData({
-      activePanel: '',
-      feedbackDraft: {
-        type: '体验问题',
-        content: '',
-        contact: ''
-      }
-    });
-    wx.showToast({ title: '反馈已提交', icon: 'success' });
+
+    this.setData({ feedbackSubmitting: true });
+
+    try {
+      const cloudData = await this.submitFeedbackToCloud(feedback);
+      this.saveFeedbackLocal({
+        ...feedback,
+        cloudId: cloudData.id || '',
+        synced: true
+      });
+      this.setData({
+        activePanel: '',
+        feedbackSubmitting: false,
+        feedbackDraft: {
+          type: '体验问题',
+          content: '',
+          contact: ''
+        }
+      });
+      wx.showToast({ title: '反馈已提交', icon: 'success' });
+    } catch (error) {
+      console.error('submit feedback failed', error);
+      this.saveFeedbackLocal({
+        ...feedback,
+        synced: false,
+        errorMessage: error.message || '反馈上传失败'
+      });
+      this.setData({ feedbackSubmitting: false });
+      wx.showModal({
+        title: '反馈已本地保存',
+        content: '后台暂时没收到。请确认已上传并部署 submitFeedback 云函数，部署后再次提交即可在 feedbacks 集合看到。',
+        showCancel: false,
+        confirmColor: '#ef65b2'
+      });
+    }
   },
 
   copyContact(e) {
@@ -288,6 +310,7 @@ Page({
       success: (res) => {
         if (!res.confirm) return;
         wx.removeStorageSync(PROFILE_KEY);
+        auth.saveUserProfile(DEFAULT_PROFILE);
         this.setData({
           profile: DEFAULT_PROFILE,
           profileDraft: DEFAULT_PROFILE
@@ -302,17 +325,8 @@ Page({
   },
 
   goHistory() {
-    this.goLoggedInPage('/pages/history/history');
+    wx.reLaunch({ url: '/pages/history/history' });
   },
 
-  goProfile() {},
-
-  async goLoggedInPage(url) {
-    try {
-      await auth.requireLogin();
-      wx.reLaunch({ url });
-    } catch (error) {
-      wx.showToast({ title: '登录后才能继续使用', icon: 'none' });
-    }
-  }
+  goProfile() {}
 });

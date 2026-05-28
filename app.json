@@ -3,6 +3,8 @@
     "pages/index/index",
     "pages/history/history",
     "pages/profile/profile",
+    "pages/agreement/agreement",
+    "pages/privacy/privacy",
     "pages/result/result",
     "pages/vip/vip"
   ],

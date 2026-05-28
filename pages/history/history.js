@@ -1,5 +1,4 @@
 const storage = require('../../utils/storage.js');
-const auth = require('../../utils/auth.js');
 const { getStatusLayout } = require('../../utils/system.js');
 
 const FILTERS = [
@@ -55,22 +54,10 @@ Page({
 
   onLoad() {
     this.setData(getStatusLayout(18));
-    this.ensureLoggedIn();
   },
 
   onShow() {
-    if (auth.isLoggedIn()) {
-      this.refreshHistory();
-    }
-  },
-
-  async ensureLoggedIn() {
-    try {
-      await auth.requireLogin();
-      this.refreshHistory();
-    } catch (error) {
-      wx.reLaunch({ url: '/pages/index/index' });
-    }
+    this.refreshHistory();
   },
 
   refreshHistory() {
@@ -97,7 +84,7 @@ Page({
         ...item,
         title: brief(item.inputText, 18),
         preview: brief(item.situationAnalysis || item.inputText, 30),
-        icon: ICON_MAP[item.emotionType] || ICON_MAP['不确定'],
+        icon: ICON_MAP[item.emotionType] || ICON_MAP.不确定,
         emotionClass: getEmotionClass(item.emotionType),
         riskClass: getRiskClass(item.riskLevel)
       }));
@@ -187,15 +174,6 @@ Page({
   goHistory() {},
 
   goProfile() {
-    this.goLoggedInPage('/pages/profile/profile');
-  },
-
-  async goLoggedInPage(url) {
-    try {
-      await auth.requireLogin();
-      wx.reLaunch({ url });
-    } catch (error) {
-      wx.showToast({ title: '登录后才能继续使用', icon: 'none' });
-    }
+    wx.reLaunch({ url: '/pages/profile/profile' });
   }
 });

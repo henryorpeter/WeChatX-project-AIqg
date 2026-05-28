@@ -19,6 +19,14 @@ async function getDoc(collection, id) {
   }
 }
 
+async function setDoc(collection, id, data) {
+  try {
+    await db.collection(collection).doc(id).set({ data });
+  } catch (error) {
+    await db.collection(collection).add({ data: { _id: id, ...data } });
+  }
+}
+
 function formatVip(membership) {
   if (!membership) {
     return { active: false, planKey: '', planName: '', expiresAt: 0 };
@@ -37,16 +45,27 @@ function formatVip(membership) {
 }
 
 exports.main = async () => {
-  const { OPENID } = cloud.getWXContext();
+  const { OPENID, UNIONID } = cloud.getWXContext();
   const membership = await getDoc('memberships', OPENID);
   const usage = await getDoc('analysis_usage', OPENID);
   const todayKey = getTodayKey();
   const usedCount = usage && usage.usageDate === todayKey ? Number(usage.usedCount || 0) : 0;
   const vip = formatVip(membership);
 
+  if (!usage || usage.usageDate !== todayKey) {
+    await setDoc('analysis_usage', OPENID, {
+      openid: OPENID,
+      usageDate: todayKey,
+      usedCount: 0,
+      updatedAt: Date.now()
+    });
+  }
+
   return {
     success: true,
     data: {
+      openid: OPENID,
+      unionid: UNIONID || '',
       vip,
       usageDate: todayKey,
       usedCount,

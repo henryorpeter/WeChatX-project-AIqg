@@ -1,0 +1,46 @@
+<view class="doc-page">
+  <view class="doc-title">用户协议</view>
+  <view class="doc-meta">更新日期：2026年5月28日</view>
+
+  <view class="doc-card">
+    <view class="doc-section">
+      <view class="section-title">1. 协议范围</view>
+      <view class="section-text">欢迎使用心依AI。本协议是你与心依AI之间关于使用本小程序服务所订立的协议。你点击登录、使用分析、查看历史记录或继续使用本服务，即表示你已阅读并同意本协议。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">2. 服务内容</view>
+      <view class="section-text">心依AI提供情感内容分析、回复建议、历史记录、本地个人资料展示等功能。分析结果由算法根据你输入的文字生成，仅供参考，不构成心理咨询、医疗诊断、法律意见或关系决策承诺。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">3. 登录与账号</view>
+      <view class="section-text">本小程序使用微信登录能力建立登录态，用于识别当前微信用户并提供基础服务。当前阶段不强制绑定手机号，也不调用微信手机号授权组件。头像、昵称由你在“我的”页面主动选择或填写。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">4. 用户行为规范</view>
+      <view class="section-text">你应确保输入内容合法、真实且不侵犯他人权益，不得上传违法违规、侵权、骚扰、暴力、诈骗、色情低俗或伤害自己及他人的内容。若内容涉及自伤、伤人或紧急危险，请立即联系现实中的可信任人员、专业机构或当地紧急服务。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">5. AI结果说明</view>
+      <view class="section-text">AI分析可能存在误差、遗漏或不适用于具体情境的情况。你应结合现实情况独立判断，不应完全依赖分析结果作出重大决定。我们会尽力提供温和、理性、边界清晰的建议，但不保证结果完全准确或满足你的全部预期。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">6. 数据与隐私</view>
+      <view class="section-text">我们会按照《隐私政策》处理你的个人信息和使用数据。请在使用服务前同时阅读并理解《隐私政策》。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">7. 服务变更与中止</view>
+      <view class="section-text">我们可能根据业务、技术、合规或安全需要调整、暂停或终止部分服务。若发生重大变化，我们会在合理范围内通过小程序页面提示或公告方式告知。</view>
+    </view>
+
+    <view class="doc-section">
+      <view class="section-title">8. 联系我们</view>
+      <view class="section-text">如你对本协议或服务有疑问，可在“我的 - 联系我们”中通过客服或邮箱与我们联系。</view>
+    </view>
+  </view>
+</view>
